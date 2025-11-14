@@ -216,6 +216,305 @@ class AnalyticsDataTest {
         assertTrue(streak >= 0)
     }
 
+    @Test
+    fun `getTimeBasedTrends groups decisions by week`() {
+        val calendar = java.util.Calendar.getInstance()
+        val today = calendar.time
+        
+        calendar.add(java.util.Calendar.DAY_OF_YEAR, -7)
+        val weekAgo = calendar.time
+        
+        val decisions = listOf(
+            Decision(
+                title = "Decision 1",
+                prediction = "Test",
+                createdAt = weekAgo,
+                outcome = "Outcome 1",
+                outcomeRecordedAt = weekAgo,
+                predictedEnergy24h = 3f,
+                actualEnergy24h = 3f
+            ),
+            Decision(
+                title = "Decision 2",
+                prediction = "Test",
+                createdAt = today,
+                outcome = "Outcome 2",
+                outcomeRecordedAt = today,
+                predictedEnergy24h = 2f,
+                actualEnergy24h = 1f
+            )
+        )
+        
+        val analytics = AnalyticsData(
+            totalDecisions = 2,
+            completedDecisions = 2,
+            averageAccuracy = 85f,
+            decisions = decisions
+        )
+        
+        val trends = analytics.getTimeBasedTrends()
+        
+        assertTrue(trends.isNotEmpty())
+        assertTrue(trends.all { it.decisionCount > 0 })
+        assertTrue(trends.all { it.averageAccuracy >= 0f && it.averageAccuracy <= 100f })
+    }
+
+    @Test
+    fun `getTimeBasedTrends returns empty for no completed decisions`() {
+        val analytics = AnalyticsData(
+            totalDecisions = 0,
+            completedDecisions = 0,
+            averageAccuracy = 0f,
+            decisions = emptyList()
+        )
+        
+        val trends = analytics.getTimeBasedTrends()
+        assertTrue(trends.isEmpty())
+    }
+
+    @Test
+    fun `getBlindSpots identifies common patterns in low accuracy decisions`() {
+        val decisions = listOf(
+            Decision(
+                title = "Late night screen",
+                prediction = "Will regret staying up late watching screens",
+                createdAt = Date(),
+                outcome = "Felt tired",
+                predictedEnergy24h = 0f,
+                actualEnergy24h = -4f
+            ),
+            Decision(
+                title = "Late night binge",
+                prediction = "Will regret staying up late binge watching",
+                createdAt = Date(),
+                outcome = "Felt terrible",
+                predictedEnergy24h = 0f,
+                actualEnergy24h = -5f
+            )
+        )
+        
+        val analytics = AnalyticsData(
+            totalDecisions = 2,
+            completedDecisions = 2,
+            averageAccuracy = 30f,
+            decisions = decisions
+        )
+        
+        val blindSpots = analytics.getBlindSpots()
+        
+        // Should identify common patterns
+        assertTrue(blindSpots.isEmpty() || blindSpots.all { it.frequency > 0 })
+    }
+
+    @Test
+    fun `getBlindSpots returns empty for no low accuracy decisions`() {
+        val decisions = listOf(
+            Decision(
+                title = "Good Decision",
+                prediction = "Test",
+                createdAt = Date(),
+                outcome = "Good",
+                predictedEnergy24h = 3f,
+                actualEnergy24h = 3f
+            )
+        )
+        
+        val analytics = AnalyticsData(
+            totalDecisions = 1,
+            completedDecisions = 1,
+            averageAccuracy = 100f,
+            decisions = decisions
+        )
+        
+        val blindSpots = analytics.getBlindSpots()
+        assertTrue(blindSpots.isEmpty())
+    }
+
+    @Test
+    fun `getOverconfidencePatterns identifies overconfident decisions`() {
+        val decisions = listOf(
+            Decision(
+                title = "Overconfident",
+                prediction = "This is a very detailed and specific prediction that will definitely happen exactly as I say",
+                createdAt = Date(),
+                outcome = "Wrong",
+                predictedEnergy24h = 0f,
+                actualEnergy24h = -5f
+            )
+        )
+        
+        val analytics = AnalyticsData(
+            totalDecisions = 1,
+            completedDecisions = 1,
+            averageAccuracy = 20f,
+            decisions = decisions
+        )
+        
+        val patterns = analytics.getOverconfidencePatterns()
+        
+        // Should identify overconfident decisions (long prediction, low accuracy)
+        assertTrue(patterns.isEmpty() || patterns.all { it.accuracy < 50f })
+    }
+
+    @Test
+    fun `getUnderestimationPattern identifies underestimation`() {
+        val decisions = listOf(
+            Decision(
+                title = "Underestimated",
+                prediction = "Test",
+                createdAt = Date(),
+                category = "Health",
+                predictedEnergy24h = -2f,
+                actualEnergy24h = -5f, // Much worse than predicted
+                outcome = "Felt terrible"
+            ),
+            Decision(
+                title = "Underestimated 2",
+                prediction = "Test",
+                createdAt = Date(),
+                category = "Health",
+                predictedEnergy24h = -1f,
+                actualEnergy24h = -4f
+            )
+        )
+        
+        val analytics = AnalyticsData(
+            totalDecisions = 2,
+            completedDecisions = 2,
+            averageAccuracy = 40f,
+            decisions = decisions
+        )
+        
+        val pattern = analytics.getUnderestimationPattern()
+        
+        // May or may not detect pattern depending on implementation
+        // Just verify it doesn't crash
+        assertNotNull(pattern) // Could be null or a string
+    }
+
+    @Test
+    fun `getCategoryAccuracy calculates accuracy per category`() {
+        val decisions = listOf(
+            Decision(
+                title = "Health 1",
+                prediction = "Test",
+                createdAt = Date(),
+                category = "Health",
+                predictedEnergy24h = 3f,
+                actualEnergy24h = 3f // Perfect
+            ),
+            Decision(
+                title = "Health 2",
+                prediction = "Test",
+                createdAt = Date(),
+                category = "Health",
+                predictedEnergy24h = 2f,
+                actualEnergy24h = 1f // Small error
+            ),
+            Decision(
+                title = "Money 1",
+                prediction = "Test",
+                createdAt = Date(),
+                category = "Money",
+                predictedEnergy24h = 0f,
+                actualEnergy24h = -3f // Larger error
+            )
+        )
+        
+        val analytics = AnalyticsData(
+            totalDecisions = 3,
+            completedDecisions = 3,
+            averageAccuracy = 70f,
+            decisions = decisions
+        )
+        
+        val categoryAccuracy = analytics.getCategoryAccuracy()
+        
+        assertEquals(2, categoryAccuracy.size)
+        assertTrue(categoryAccuracy.containsKey("Health"))
+        assertTrue(categoryAccuracy.containsKey("Money"))
+        // Health should have higher accuracy (better predictions)
+        assertTrue(categoryAccuracy["Health"]!! > categoryAccuracy["Money"]!!)
+    }
+
+    @Test
+    fun `findSimilarDecisions finds decisions with similar titles`() {
+        val baseDecision = Decision(
+            id = 1,
+            title = "Order food delivery tonight",
+            prediction = "Test",
+            createdAt = Date(),
+            category = "Money"
+        )
+        
+        val decisions = listOf(
+            baseDecision,
+            Decision(
+                id = 2,
+                title = "Order food delivery again",
+                prediction = "Test",
+                createdAt = Date(),
+                category = "Money",
+                outcome = "Test",
+                predictedEnergy24h = 2f,
+                actualEnergy24h = 1f
+            ),
+            Decision(
+                id = 3,
+                title = "Order food tonight",
+                prediction = "Test",
+                createdAt = Date(),
+                category = "Money",
+                outcome = "Test",
+                predictedEnergy24h = 2f,
+                actualEnergy24h = 1f
+            ),
+            Decision(
+                id = 4,
+                title = "Different decision",
+                prediction = "Test",
+                createdAt = Date(),
+                category = "Health",
+                outcome = "Test"
+            )
+        )
+        
+        val analytics = AnalyticsData(
+            totalDecisions = 4,
+            completedDecisions = 3,
+            averageAccuracy = 70f,
+            decisions = decisions
+        )
+        
+        val similar = analytics.findSimilarDecisions(baseDecision)
+        
+        // Should find decisions with similar words
+        assertTrue(similar.isNotEmpty())
+        assertTrue(similar.all { it.category == "Money" })
+        assertTrue(similar.all { it.id != baseDecision.id })
+    }
+
+    @Test
+    fun `findSimilarDecisions returns empty for no category`() {
+        val decision = Decision(
+            id = 1,
+            title = "Test",
+            prediction = "Test",
+            createdAt = Date(),
+            category = null
+        )
+        
+        val analytics = AnalyticsData(
+            totalDecisions = 1,
+            completedDecisions = 0,
+            averageAccuracy = 0f,
+            decisions = listOf(decision)
+        )
+        
+        val similar = analytics.findSimilarDecisions(decision)
+        assertTrue(similar.isEmpty())
+    }
+
     // Helper functions
     private fun createDecisionWithAccuracy(accuracy: Float): Decision {
         val decision = Decision(

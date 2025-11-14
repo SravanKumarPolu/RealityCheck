@@ -136,7 +136,11 @@ class WeeklyInsightsWorker @AssistedInject constructor(
     private fun getTopRegretCategory(completed: List<com.realitycheck.app.data.Decision>): String? {
         val regretByCategory = completed
             .filter { it.getRegretIndex() != null && it.category != null }
-            .groupBy { it.category!! }
+            .mapNotNull { decision -> decision.category?.let { it to decision } }
+            .groupBy { it.first }
+            .mapValues { (_, decisionsWithCategory) ->
+                decisionsWithCategory.map { it.second }
+            }
             .mapValues { (_, decisions) ->
                 decisions.mapNotNull { it.getRegretIndex() }.average().toFloat()
             }

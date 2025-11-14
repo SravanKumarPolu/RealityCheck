@@ -14,7 +14,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.background
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.ui.graphics.Color
 import com.realitycheck.app.data.Decision
+import com.realitycheck.app.data.DecisionGroup
 import com.realitycheck.app.ui.theme.*
 
 @Composable
@@ -23,13 +27,16 @@ fun FilterBar(
     selectedTags: List<String>,
     availableTags: List<String>,
     categories: List<String>,
+    groups: List<DecisionGroup> = emptyList(),
+    selectedGroupId: Long? = null,
     onCategorySelected: (String?) -> Unit,
     onTagSelected: (String) -> Unit,
     onTagRemoved: (String) -> Unit,
+    onGroupSelected: ((Long?) -> Unit)? = null,
     onClearFilters: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val hasActiveFilters = selectedCategory != null || selectedTags.isNotEmpty()
+    val hasActiveFilters = selectedCategory != null || selectedTags.isNotEmpty() || selectedGroupId != null
     
     Card(
         modifier = modifier.fillMaxWidth(),
@@ -105,6 +112,53 @@ fun FilterBar(
                 }
             }
             
+            // Groups Filter
+            if (groups.isNotEmpty() && onGroupSelected != null) {
+                Column {
+                    Text(
+                        text = "Groups",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
+                        modifier = Modifier.padding(bottom = Spacing.xs)
+                    )
+                    LazyRow(
+                        horizontalArrangement = Arrangement.spacedBy(Spacing.xs)
+                    ) {
+                        item {
+                            FilterChip(
+                                selected = selectedGroupId == null,
+                                onClick = { onGroupSelected(null) },
+                                label = { Text("All") }
+                            )
+                        }
+                        items(groups) { group ->
+                            FilterChip(
+                                selected = selectedGroupId == group.id,
+                                onClick = { 
+                                    onGroupSelected(if (selectedGroupId == group.id) null else group.id)
+                                },
+                                label = { 
+                                    Row(
+                                        horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Box(
+                                            modifier = Modifier
+                                                .size(12.dp)
+                                                .background(
+                                                    color = Color(android.graphics.Color.parseColor(group.color)),
+                                                    shape = CircleShape
+                                                )
+                                        )
+                                        Text(group.name)
+                                    }
+                                }
+                            )
+                        }
+                    }
+                }
+            }
+            
             // Tags Filter
             if (availableTags.isNotEmpty()) {
                 Column {
@@ -158,6 +212,37 @@ fun FilterBar(
                                 )
                             }
                         )
+                    }
+                    if (selectedGroupId != null && onGroupSelected != null) {
+                        val selectedGroup = groups.find { it.id == selectedGroupId }
+                        selectedGroup?.let { group ->
+                            AssistChip(
+                                onClick = { onGroupSelected(null) },
+                                label = { 
+                                    Row(
+                                        horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Box(
+                                            modifier = Modifier
+                                                .size(10.dp)
+                                                .background(
+                                                    color = Color(android.graphics.Color.parseColor(group.color)),
+                                                    shape = CircleShape
+                                                )
+                                        )
+                                        Text(group.name)
+                                    }
+                                },
+                                trailingIcon = {
+                                    Icon(
+                                        imageVector = Icons.Default.Close,
+                                        contentDescription = "Remove",
+                                        modifier = Modifier.size(16.dp)
+                                    )
+                                }
+                            )
+                        }
                     }
                     selectedTags.forEach { tag ->
                         AssistChip(

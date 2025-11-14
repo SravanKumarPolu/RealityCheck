@@ -49,7 +49,8 @@ fun AnalyticsScreen(
             )
         }
     ) { padding ->
-        if (analytics == null) {
+        val currentAnalytics = analytics
+        if (currentAnalytics == null) {
             FullScreenLoading(message = "Loading analytics...")
         } else {
             Column(
@@ -67,12 +68,12 @@ fun AnalyticsScreen(
                 ) {
                     StatCard(
                         title = "Total",
-                        value = analytics!!.totalDecisions.toString(),
+                        value = currentAnalytics.totalDecisions.toString(),
                         modifier = Modifier.weight(1f)
                     )
                     StatCard(
                         title = "Completed",
-                        value = analytics!!.completedDecisions.toString(),
+                        value = currentAnalytics.completedDecisions.toString(),
                         modifier = Modifier.weight(1f),
                         color = BrandSuccess
                     )
@@ -93,27 +94,27 @@ fun AnalyticsScreen(
                             fontWeight = FontWeight.Bold
                         )
                         
-                        if (analytics!!.completedDecisions > 0) {
+                        if (currentAnalytics.completedDecisions > 0) {
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
                                 horizontalArrangement = Arrangement.SpaceBetween,
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Text(
-                                    text = "${analytics!!.averageAccuracy.toInt()}%",
+                                    text = "${currentAnalytics.averageAccuracy.toInt()}%",
                                     style = MaterialTheme.typography.displaySmall,
                                     fontWeight = FontWeight.Bold,
                                     color = BrandPrimary
                                 )
                                 Text(
-                                    text = "${analytics!!.completedDecisions} decisions",
+                                    text = "${currentAnalytics.completedDecisions} decisions",
                                     style = MaterialTheme.typography.bodyMedium,
                                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                                 )
                             }
                             
                             LinearProgressIndicator(
-                                progress = analytics!!.averageAccuracy / 100f,
+                                progress = currentAnalytics.averageAccuracy / 100f,
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .height(16.dp)
@@ -131,7 +132,7 @@ fun AnalyticsScreen(
                 }
                 
                 // Regret Map
-                if (analytics!!.completedDecisions > 0) {
+                if (currentAnalytics.completedDecisions > 0) {
                     Card(
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(Radius.lg)
@@ -146,7 +147,7 @@ fun AnalyticsScreen(
                                 fontWeight = FontWeight.Bold
                             )
                             
-                            val regretPatterns = analytics!!.getRegretPatterns()
+                            val regretPatterns = currentAnalytics.getRegretPatterns()
                             
                             RegretPatternItem(
                                 label = "High Accuracy (75%+)",
@@ -168,7 +169,7 @@ fun AnalyticsScreen(
                 }
                 
                 // Time-Based Trends (Over Weeks)
-                val timeTrends = analytics!!.getTimeBasedTrends()
+                val timeTrends = currentAnalytics.getTimeBasedTrends()
                 if (timeTrends.isNotEmpty() && timeTrends.size >= 2) {
                     Card(
                         modifier = Modifier.fillMaxWidth(),
@@ -250,7 +251,7 @@ fun AnalyticsScreen(
                 }
                 
                 // Overconfidence Patterns
-                val overconfidencePatterns = analytics!!.getOverconfidencePatterns()
+                val overconfidencePatterns = currentAnalytics.getOverconfidencePatterns()
                 if (overconfidencePatterns.isNotEmpty()) {
                     Card(
                         modifier = Modifier.fillMaxWidth(),
@@ -316,7 +317,7 @@ fun AnalyticsScreen(
                 }
                 
                 // Blind Spots
-                val blindSpots = analytics!!.getBlindSpots()
+                val blindSpots = currentAnalytics.getBlindSpots()
                 if (blindSpots.isNotEmpty()) {
                     Card(
                         modifier = Modifier.fillMaxWidth(),
@@ -379,7 +380,7 @@ fun AnalyticsScreen(
                 }
                 
                 // Insights
-                if (analytics!!.completedDecisions >= 5) {
+                if (currentAnalytics.completedDecisions >= 5) {
                     Card(
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(Radius.lg),
@@ -397,7 +398,7 @@ fun AnalyticsScreen(
                                 fontWeight = FontWeight.Bold
                             )
                             
-                            val avgAccuracy = analytics!!.averageAccuracy
+                            val avgAccuracy = currentAnalytics.averageAccuracy
                             val insights = mutableListOf<String>()
                             
                             when {

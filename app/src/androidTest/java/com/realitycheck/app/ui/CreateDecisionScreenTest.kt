@@ -34,9 +34,9 @@ class CreateDecisionScreenTest {
             )
         }
 
-        // Verify screen title
-        composeTestRule.onNodeWithText("New Decision", substring = true)
+        composeTestRule.onNodeWithText("What are you deciding?")
             .assertExists()
+            .assertIsDisplayed()
     }
 
     @Test
@@ -47,8 +47,14 @@ class CreateDecisionScreenTest {
             )
         }
 
-        // Categories should be visible
-        composeTestRule.onNodeWithText("Health", substring = true)
+        // Check for category chips
+        composeTestRule.onNodeWithText("Health")
+            .assertExists()
+        
+        composeTestRule.onNodeWithText("Work")
+            .assertExists()
+        
+        composeTestRule.onNodeWithText("Money")
             .assertExists()
     }
 
@@ -60,22 +66,30 @@ class CreateDecisionScreenTest {
             )
         }
 
-        // Verify sliders are present by checking for labels
-        composeTestRule.onNodeWithText("Energy", substring = true, ignoreCase = true)
+        // Scroll to find sliders
+        composeTestRule.onRoot().performTouchInput {
+            swipeUp()
+        }
+
+        // Check for slider labels
+        composeTestRule.onNodeWithText("Energy", substring = true, useUnmergedTree = true)
+            .assertExists()
+        
+        composeTestRule.onNodeWithText("Mood", substring = true, useUnmergedTree = true)
             .assertExists()
     }
     
     @Test
-    fun createDecisionScreen_showsTagsSection() {
+    fun createDecisionScreen_showsLockInButton() {
         composeTestRule.setContent {
             CreateDecisionScreen(
                 onNavigateBack = {}
             )
         }
 
-        // Tags section should be visible
-        composeTestRule.onNodeWithText("Tags", substring = true, ignoreCase = true)
+        composeTestRule.onNodeWithText("Lock in prediction")
             .assertExists()
+            .assertIsDisplayed()
     }
     
     @Test
@@ -86,9 +100,39 @@ class CreateDecisionScreenTest {
             )
         }
 
-        // Templates section should be visible
-        composeTestRule.onNodeWithText("Quick Start Templates", substring = true, ignoreCase = true)
+        // Check for template section
+        composeTestRule.onNodeWithText("Quick Start Templates", substring = true)
+            .assertExists()
+    }
+
+    @Test
+    fun createDecisionScreen_categorySelectionWorks() {
+        composeTestRule.setContent {
+            CreateDecisionScreen(
+                onNavigateBack = {}
+            )
+        }
+
+        // Click on Health category
+        composeTestRule.onNodeWithText("Health")
+            .performClick()
+            .assertIsSelected()
+    }
+
+    @Test
+    fun createDecisionScreen_canEnterTitle() {
+        composeTestRule.setContent {
+            CreateDecisionScreen(
+                onNavigateBack = {}
+            )
+        }
+
+        // Find title field and enter text
+        composeTestRule.onNodeWithText("What are you deciding?")
+            .performTextInput("Should I order food?")
+
+        // Verify text was entered
+        composeTestRule.onNodeWithText("Should I order food?", substring = true)
             .assertExists()
     }
 }
-

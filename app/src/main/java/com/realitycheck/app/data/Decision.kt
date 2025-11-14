@@ -33,7 +33,9 @@ data class Decision(
     // Did user follow through with the decision?
     val followedDecision: Boolean? = null,
     // Tags for better organization
-    val tags: List<String> = emptyList()
+    val tags: List<String> = emptyList(),
+    // Group/Project ID for organization
+    val groupId: Long? = null
 ) {
     fun isCompleted(): Boolean = outcome != null || actualEnergy24h != null
     

@@ -61,7 +61,8 @@ fun InsightsScreen(
             )
         }
     ) { padding ->
-        if (analytics == null || analytics!!.completedDecisions == 0) {
+        val currentAnalytics = analytics
+        if (currentAnalytics == null || currentAnalytics.completedDecisions == 0) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -112,19 +113,19 @@ fun InsightsScreen(
                         )
                         
                         Text(
-                            text = "${analytics!!.averageAccuracy.toInt()}%",
+                            text = "${currentAnalytics.averageAccuracy.toInt()}%",
                             style = MaterialTheme.typography.displayMedium,
                             fontWeight = FontWeight.Bold,
                             color = BrandPrimary
                         )
                         
                         Text(
-                            text = "You're ${analytics!!.averageAccuracy.toInt()}% accurate about your future feelings.",
+                            text = "You're ${currentAnalytics.averageAccuracy.toInt()}% accurate about your future feelings.",
                             style = MaterialTheme.typography.bodyLarge
                         )
                         
                         LinearProgressIndicator(
-                            progress = analytics!!.averageAccuracy / 100f,
+                            progress = currentAnalytics.averageAccuracy / 100f,
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(16.dp)
@@ -149,7 +150,7 @@ fun InsightsScreen(
                             fontWeight = FontWeight.Bold
                         )
                         
-                        val topRegretCategory = analytics!!.getTopRegretCategory()
+                        val topRegretCategory = currentAnalytics.getTopRegretCategory()
                         if (topRegretCategory != null) {
                             Text(
                                 text = "Most regretful category: ${topRegretCategory.first}",
@@ -158,7 +159,7 @@ fun InsightsScreen(
                             )
                         }
                         
-                        val repeatedRegret = analytics!!.getRepeatedRegret()
+                        val repeatedRegret = currentAnalytics.getRepeatedRegret()
                         if (repeatedRegret != null) {
                             Text(
                                 text = "Repeated regret: $repeatedRegret",
@@ -168,7 +169,7 @@ fun InsightsScreen(
                         }
                         
                         // V1 Requirement: Regret score per category
-                        val regretPerCategory = analytics!!.getRegretScorePerCategory()
+                        val regretPerCategory = currentAnalytics.getRegretScorePerCategory()
                         if (regretPerCategory.isNotEmpty()) {
                             Spacer(modifier = Modifier.height(8.dp))
                             Divider()
@@ -203,8 +204,8 @@ fun InsightsScreen(
                 }
                 
                 // Miscalibration Indicators
-                val overconfidence = analytics!!.getOverconfidenceByCategory()
-                val underestimation = analytics!!.getUnderestimationPattern()
+                val overconfidence = currentAnalytics.getOverconfidenceByCategory()
+                val underestimation = currentAnalytics.getUnderestimationPattern()
                 
                 if (overconfidence != null || underestimation != null) {
                     Card(
@@ -242,7 +243,7 @@ fun InsightsScreen(
                 }
                 
                 // Category Accuracy Bar Chart
-                val categoryAccuracy = analytics!!.getCategoryAccuracy()
+                val categoryAccuracy = currentAnalytics.getCategoryAccuracy()
                 if (categoryAccuracy.isNotEmpty()) {
                     Card(
                         modifier = Modifier.fillMaxWidth(),
@@ -281,7 +282,7 @@ fun InsightsScreen(
                 }
                 
                 // Streak
-                val streak = analytics!!.getDecisionStreak()
+                val streak = currentAnalytics.getDecisionStreak()
                 if (streak > 0) {
                     Card(
                         modifier = Modifier.fillMaxWidth(),
@@ -322,7 +323,7 @@ fun InsightsScreen(
                 }
                 
                 // Time-Series Chart
-                val timeTrends = analytics!!.getTimeBasedTrends()
+                val timeTrends = currentAnalytics.getTimeBasedTrends()
                 if (timeTrends.isNotEmpty()) {
                     Card(
                         modifier = Modifier.fillMaxWidth(),
@@ -344,7 +345,7 @@ fun InsightsScreen(
                 }
                 
                 // Heatmap Chart
-                val heatmapData = buildHeatmapData(analytics!!)
+                val heatmapData = buildHeatmapData(currentAnalytics)
                 if (heatmapData.isNotEmpty()) {
                     Card(
                         modifier = Modifier.fillMaxWidth(),
@@ -384,21 +385,22 @@ private fun buildHeatmapData(analytics: com.realitycheck.app.data.AnalyticsData)
     val result = mutableMapOf<String, MutableMap<String, Float>>()
     
     // Group by category and month, then calculate averages
-    val grouped = completed.groupBy { decision ->
-        val category = decision.category!!
+    val grouped = completed
+        .mapNotNull { decision ->
+            val category = decision.category ?: return@mapNotNull null
         val month = dateFormat.format(decision.outcomeRecordedAt ?: decision.createdAt)
-        category to month
+            Triple(category, month, decision)
     }
+        .groupBy { it.first to it.second }
     
-    grouped.forEach { (categoryMonth, decisions) ->
+    grouped.forEach { (categoryMonth, triplets) ->
         val category = categoryMonth.first
         val month = categoryMonth.second
+        val decisions = triplets.map { it.third }
         val avgRegret = decisions.mapNotNull { it.getRegretIndex() }.average().toFloat()
         
-        if (!result.containsKey(category)) {
-            result[category] = mutableMapOf()
-        }
-        result[category]!![month] = avgRegret
+        val categoryMap = result.getOrPut(category) { mutableMapOf() }
+        categoryMap[month] = avgRegret
     }
     
     return result

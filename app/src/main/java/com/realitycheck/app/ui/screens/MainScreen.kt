@@ -53,10 +53,12 @@ fun MainScreen(
 ) {
     val decisions by viewModel.decisions.collectAsState(initial = emptyList())
     val analytics by viewModel.analytics.collectAsState()
+    val groups by viewModel.groups.collectAsState(initial = emptyList())
     
     // Filter state
     var selectedCategory by remember { mutableStateOf<String?>(null) }
     var selectedTags by remember { mutableStateOf<List<String>>(emptyList()) }
+    var selectedGroupId by remember { mutableStateOf<Long?>(null) }
     var availableTags by remember { mutableStateOf<List<String>>(emptyList()) }
     val repository = viewModel.repository
     val scope = rememberCoroutineScope()
@@ -69,12 +71,18 @@ fun MainScreen(
     }
     
     // Filter decisions
-    val filteredDecisions = remember(decisions, selectedCategory, selectedTags) {
-        repository.filterDecisions(
+    val filteredDecisions = remember(decisions, selectedCategory, selectedTags, selectedGroupId) {
+        val categoryFiltered = repository.filterDecisions(
             decisions = decisions,
             selectedCategory = selectedCategory,
             selectedTags = selectedTags
         )
+        // Apply group filter
+        if (selectedGroupId != null) {
+            categoryFiltered.filter { it.groupId == selectedGroupId }
+        } else {
+            categoryFiltered
+        }
     }
     
     // Separate active and completed decisions
@@ -147,6 +155,8 @@ fun MainScreen(
                         selectedTags = selectedTags,
                         availableTags = availableTags,
                         categories = Decision.CATEGORIES,
+                        groups = groups,
+                        selectedGroupId = selectedGroupId,
                         onCategorySelected = { selectedCategory = it },
                         onTagSelected = { 
                             if (!selectedTags.contains(it)) {
@@ -154,9 +164,11 @@ fun MainScreen(
                             }
                         },
                         onTagRemoved = { selectedTags = selectedTags.filter { tag -> tag != it } },
+                        onGroupSelected = { selectedGroupId = it },
                         onClearFilters = {
                             selectedCategory = null
                             selectedTags = emptyList()
+                            selectedGroupId = null
                         }
                     )
                 }

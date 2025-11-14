@@ -20,6 +20,9 @@ interface DecisionDao {
     @Query("SELECT * FROM decisions WHERE category = :category ORDER BY createdAt DESC")
     fun getDecisionsByCategory(category: String): Flow<List<Decision>>
     
+    @Query("SELECT * FROM decisions WHERE groupId = :groupId ORDER BY createdAt DESC")
+    fun getDecisionsByGroup(groupId: Long): Flow<List<Decision>>
+    
     @Query("SELECT DISTINCT category FROM decisions WHERE category IS NOT NULL")
     suspend fun getAllCategories(): List<String>
     

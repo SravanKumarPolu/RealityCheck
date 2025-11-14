@@ -46,9 +46,12 @@ fun RealityCheckScreen(
     // Did you follow the decision?
     var followedDecision by remember { mutableStateOf<Boolean?>(null) }
     
+    var errorMessage by remember { mutableStateOf<String?>(null) }
+    
     // Load decision and initialize sliders if already has data
     LaunchedEffect(decisionId) {
         kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
+            try {
             val loaded = repository.getDecisionById(decisionId)
             if (loaded != null) {
                 decision = loaded
@@ -58,6 +61,12 @@ fun RealityCheckScreen(
                 actualRegret = loaded.actualRegret24h ?: (loaded.predictedRegretChance24h?.let { it + 5f } ?: 0f)
                 outcomeNote = loaded.outcome ?: ""
                 followedDecision = loaded.followedDecision
+                    errorMessage = null
+                } else {
+                    errorMessage = "Decision not found"
+                }
+            } catch (e: Exception) {
+                errorMessage = "Failed to load decision: ${e.message}"
             }
         }
     }
@@ -72,7 +81,24 @@ fun RealityCheckScreen(
     }
     
     if (decision == null) {
+        if (errorMessage != null) {
+            // Show error state
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(Spacing.lg),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                ErrorCard(message = errorMessage ?: "Unknown error")
+                Spacer(modifier = Modifier.height(Spacing.lg))
+                Button(onClick = onNavigateBack) {
+                    Text("Go Back")
+                }
+            }
+        } else {
         FullScreenLoading(message = "Loading decision...")
+        }
         return
     }
     
@@ -121,7 +147,7 @@ fun RealityCheckScreen(
                         color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
                     )
                     Text(
-                        text = "\"${decision!!.title}\"",
+                        text = decision?.let { "\"${it.title}\"" } ?: "",
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold
                     )
@@ -147,38 +173,38 @@ fun RealityCheckScreen(
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     // Energy (-5 to +5)
-                    if (decision!!.predictedEnergy24h != null) {
+                    decision?.predictedEnergy24h?.let { predictedEnergy ->
                         SliderRow(
                             label = "Energy",
                             value = actualEnergy,
                             onValueChange = { actualEnergy = it },
                             valueRange = -5f..5f,
                             steps = 9,
-                            predictedValue = decision!!.predictedEnergy24h
+                            predictedValue = predictedEnergy
                         )
                     }
                     
                     // Mood (-5 to +5)
-                    if (decision!!.predictedMood24h != null) {
+                    decision?.predictedMood24h?.let { predictedMood ->
                         SliderRow(
                             label = "Mood",
                             value = actualMood,
                             onValueChange = { actualMood = it },
                             valueRange = -5f..5f,
                             steps = 9,
-                            predictedValue = decision!!.predictedMood24h
+                            predictedValue = predictedMood
                         )
                     }
                     
                     // Stress (-5 to +5)
-                    if (decision!!.predictedStress24h != null) {
+                    decision?.predictedStress24h?.let { predictedStress ->
                         SliderRow(
                             label = "Stress",
                             value = actualStress,
                             onValueChange = { actualStress = it },
                             valueRange = -5f..5f,
                             steps = 9,
-                            predictedValue = decision!!.predictedStress24h
+                            predictedValue = predictedStress
                         )
                     }
                     
@@ -189,7 +215,7 @@ fun RealityCheckScreen(
                         onValueChange = { actualRegret = it },
                         valueRange = 0f..10f,
                         steps = 9,
-                        predictedValue = decision!!.predictedRegretChance24h?.let { it + 5f } // Convert -5..+5 to 0..10
+                        predictedValue = decision?.predictedRegretChance24h?.let { it + 5f } // Convert -5..+5 to 0..10
                     )
                 }
             }
@@ -247,9 +273,9 @@ fun RealityCheckScreen(
             // Save Reality button
             Button(
                 onClick = {
-                    if (decision != null) {
+                    decision?.let { currentDecision ->
                         viewModel.updateDecisionOutcome(
-                            decision = decision!!,
+                            decision = currentDecision,
                             outcome = outcomeNote,
                             actualEnergy24h = actualEnergy,
                             actualMood24h = actualMood,

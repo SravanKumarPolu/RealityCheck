@@ -43,8 +43,11 @@ fun DecisionDetailScreen(
     val repository = DatabaseProvider.getRepository()
     val decisions by viewModel.decisions.collectAsState(initial = emptyList())
     
+    var errorMessage by remember { mutableStateOf<String?>(null) }
+    
     LaunchedEffect(decisionId, decisions) {
         withContext(Dispatchers.IO) {
+            try {
             val loaded = repository.getDecisionById(decisionId)
             if (loaded != null) {
                 decision = loaded
@@ -56,18 +59,54 @@ fun DecisionDetailScreen(
                     decisions = decisions
                 )
                 similarDecisions = analytics.findSimilarDecisions(loaded, limit = 3)
+                    errorMessage = null
+                } else {
+                    errorMessage = "Decision not found"
+                }
+            } catch (e: Exception) {
+                errorMessage = "Failed to load decision: ${e.message}"
             }
         }
     }
     
+    val dateFormat = SimpleDateFormat("MMM dd, yyyy 'at' HH:mm", Locale.getDefault())
+    
     if (decision == null) {
+        if (errorMessage != null) {
+            // Show error state
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(Spacing.lg),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    text = "Error",
+                    style = MaterialTheme.typography.headlineMedium,
+                    color = MaterialTheme.colorScheme.error
+                )
+                Spacer(modifier = Modifier.height(Spacing.md))
+                Text(
+                    text = errorMessage ?: "Unknown error",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+                Spacer(modifier = Modifier.height(Spacing.lg))
+                Button(onClick = onNavigateBack) {
+                    Text("Go Back")
+                }
+            }
+        } else {
         FullScreenLoading(message = "Loading decision...")
+        }
         return
     }
     
-    val dateFormat = SimpleDateFormat("MMM dd, yyyy 'at' HH:mm", Locale.getDefault())
-    val isCompleted = decision!!.isCompleted()
-    val accuracy = decision!!.getAccuracy()
+    // Safe reference after null check
+    val currentDecision = decision
+    val isCompleted = currentDecision.isCompleted()
+    val accuracy = currentDecision.getAccuracy()
     
     Scaffold(
         topBar = {
@@ -84,8 +123,10 @@ fun DecisionDetailScreen(
                 actions = {
                     IconButton(
                         onClick = {
-                            viewModel.deleteDecision(decision!!)
+                            currentDecision?.let {
+                                viewModel.deleteDecision(it)
                             onNavigateBack()
+                            }
                         }
                     ) {
                         Icon(
@@ -129,26 +170,26 @@ fun DecisionDetailScreen(
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     Text(
-                        text = decision!!.title,
+                        text = currentDecision.title,
                         style = MaterialTheme.typography.headlineMedium,
                         fontWeight = FontWeight.Bold
                     )
                     
-                    if (decision!!.description.isNotBlank()) {
+                    if (currentDecision.description.isNotBlank()) {
                         Text(
-                            text = decision!!.description,
+                            text = currentDecision.description,
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
                         )
                     }
                     
                     // Tags display
-                    if (decision!!.tags.isNotEmpty()) {
+                    if (currentDecision.tags.isNotEmpty()) {
                         Spacer(modifier = Modifier.height(8.dp))
                         LazyRow(
                             horizontalArrangement = Arrangement.spacedBy(Spacing.xs)
                         ) {
-                            items(decision!!.tags) { tag ->
+                            items(currentDecision.tags) { tag ->
                                 Surface(
                                     shape = RoundedCornerShape(Radius.sm),
                                     color = MaterialTheme.colorScheme.secondaryContainer,
@@ -180,7 +221,7 @@ fun DecisionDetailScreen(
                             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                         )
                         Text(
-                            text = dateFormat.format(decision!!.createdAt),
+                            text = dateFormat.format(currentDecision.createdAt),
                             style = MaterialTheme.typography.labelMedium
                         )
                     }
@@ -188,10 +229,10 @@ fun DecisionDetailScreen(
             }
             
             // Prediction Display
-            val hasQuantitativePredictions = decision!!.predictedEnergy24h != null || 
-                                            decision!!.predictedMood24h != null || 
-                                            decision!!.predictedStress24h != null ||
-                                            decision!!.predictedOverallImpact7d != null
+            val hasQuantitativePredictions = currentDecision.predictedEnergy24h != null || 
+                                            currentDecision.predictedMood24h != null || 
+                                            currentDecision.predictedStress24h != null ||
+                                            currentDecision.predictedOverallImpact7d != null
             
             if (hasQuantitativePredictions) {
                 Card(
@@ -213,9 +254,9 @@ fun DecisionDetailScreen(
                         )
                         
                         // Short-term predictions (24h)
-                        if (decision!!.predictedEnergy24h != null || 
-                            decision!!.predictedMood24h != null || 
-                            decision!!.predictedStress24h != null) {
+                        if (currentDecision.predictedEnergy24h != null || 
+                            currentDecision.predictedMood24h != null || 
+                            currentDecision.predictedStress24h != null) {
                             Text(
                                 text = "Short-term (24h):",
                                 style = MaterialTheme.typography.bodySmall,
@@ -223,33 +264,33 @@ fun DecisionDetailScreen(
                                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
                             )
                             
-                            if (decision!!.predictedEnergy24h != null) {
-                                PredictionRow("Energy", decision!!.predictedEnergy24h, -5f..5f)
+                            if (currentDecision.predictedEnergy24h != null) {
+                                PredictionRow("Energy", currentDecision.predictedEnergy24h, -5f..5f)
                             }
-                            if (decision!!.predictedMood24h != null) {
-                                PredictionRow("Mood", decision!!.predictedMood24h, -5f..5f)
+                            if (currentDecision.predictedMood24h != null) {
+                                PredictionRow("Mood", currentDecision.predictedMood24h, -5f..5f)
                             }
-                            if (decision!!.predictedStress24h != null) {
-                                PredictionRow("Stress", decision!!.predictedStress24h, -5f..5f)
+                            if (currentDecision.predictedStress24h != null) {
+                                PredictionRow("Stress", currentDecision.predictedStress24h, -5f..5f)
                             }
-                            if (decision!!.predictedRegretChance24h != null) {
-                                PredictionRow("Regret", decision!!.predictedRegretChance24h, -5f..5f)
+                            if (currentDecision.predictedRegretChance24h != null) {
+                                PredictionRow("Regret", currentDecision.predictedRegretChance24h, -5f..5f)
                             }
                         }
                         
                         // Long-term prediction (7d)
-                        if (decision!!.predictedOverallImpact7d != null) {
+                        if (currentDecision.predictedOverallImpact7d != null) {
                             Text(
                                 text = "Long-term (7d):",
                                 style = MaterialTheme.typography.bodySmall,
                                 fontWeight = FontWeight.Medium,
                                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
                             )
-                            PredictionRow("Overall Impact", decision!!.predictedOverallImpact7d, -5f..5f)
+                            PredictionRow("Overall Impact", currentDecision.predictedOverallImpact7d, -5f..5f)
                         }
                         
                         // Confidence
-                        if (decision!!.predictionConfidence != null) {
+                        if (currentDecision.predictionConfidence != null) {
                             Spacer(modifier = Modifier.height(4.dp))
                             Divider()
                             Row(
@@ -261,7 +302,7 @@ fun DecisionDetailScreen(
                                     style = MaterialTheme.typography.bodyMedium
                                 )
                                 Text(
-                                    text = "${decision!!.predictionConfidence.toInt()}%",
+                                    text = "${currentDecision.predictionConfidence.toInt()}%",
                                     style = MaterialTheme.typography.bodyMedium,
                                     fontWeight = FontWeight.Bold,
                                     color = BrandPrimary
@@ -270,11 +311,11 @@ fun DecisionDetailScreen(
                         }
                         
                         // Text prediction (if exists)
-                        if (decision!!.prediction.isNotBlank()) {
+                        if (currentDecision.prediction.isNotBlank()) {
                             Spacer(modifier = Modifier.height(4.dp))
                             Divider()
                             Text(
-                                text = decision!!.prediction,
+                                text = currentDecision.prediction,
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
                             )
@@ -301,7 +342,7 @@ fun DecisionDetailScreen(
                             color = BrandPrimary
                         )
                         Text(
-                            text = decision!!.prediction,
+                            text = currentDecision.prediction,
                             style = MaterialTheme.typography.bodyLarge
                         )
                     }
@@ -310,10 +351,10 @@ fun DecisionDetailScreen(
             
             if (isCompleted) {
                 // Show quantitative outcomes if available
-                val hasQuantitativeOutcomes = decision!!.actualEnergy24h != null || 
-                                              decision!!.actualMood24h != null || 
-                                              decision!!.actualStress24h != null || 
-                                              decision!!.actualRegret24h != null
+                val hasQuantitativeOutcomes = currentDecision.actualEnergy24h != null || 
+                                              currentDecision.actualMood24h != null || 
+                                              currentDecision.actualStress24h != null || 
+                                              currentDecision.actualRegret24h != null
                 
                 if (hasQuantitativeOutcomes) {
                     Card(
@@ -335,44 +376,44 @@ fun DecisionDetailScreen(
                             )
                             
                             // Show comparison: Predicted vs Actual
-                            if (decision!!.predictedEnergy24h != null && decision!!.actualEnergy24h != null) {
+                            if (currentDecision.predictedEnergy24h != null && currentDecision.actualEnergy24h != null) {
                                 OutcomeComparisonRow(
                                     label = "Energy",
-                                    predicted = decision!!.predictedEnergy24h,
-                                    actual = decision!!.actualEnergy24h,
+                                    predicted = currentDecision.predictedEnergy24h,
+                                    actual = currentDecision.actualEnergy24h,
                                     range = -5f..5f
                                 )
                             }
                             
-                            if (decision!!.predictedMood24h != null && decision!!.actualMood24h != null) {
+                            if (currentDecision.predictedMood24h != null && currentDecision.actualMood24h != null) {
                                 OutcomeComparisonRow(
                                     label = "Mood",
-                                    predicted = decision!!.predictedMood24h,
-                                    actual = decision!!.actualMood24h,
+                                    predicted = currentDecision.predictedMood24h,
+                                    actual = currentDecision.actualMood24h,
                                     range = -5f..5f
                                 )
                             }
                             
-                            if (decision!!.predictedStress24h != null && decision!!.actualStress24h != null) {
+                            if (currentDecision.predictedStress24h != null && currentDecision.actualStress24h != null) {
                                 OutcomeComparisonRow(
                                     label = "Stress",
-                                    predicted = decision!!.predictedStress24h,
-                                    actual = decision!!.actualStress24h,
+                                    predicted = currentDecision.predictedStress24h,
+                                    actual = currentDecision.actualStress24h,
                                     range = -5f..5f
                                 )
                             }
                             
-                            if (decision!!.predictedRegretChance24h != null && decision!!.actualRegret24h != null) {
+                            if (currentDecision.predictedRegretChance24h != null && currentDecision.actualRegret24h != null) {
                                 OutcomeComparisonRow(
                                     label = "Regret",
-                                    predicted = decision!!.predictedRegretChance24h + 5f, // Normalize to 0-10
-                                    actual = decision!!.actualRegret24h,
+                                    predicted = currentDecision.predictedRegretChance24h + 5f, // Normalize to 0-10
+                                    actual = currentDecision.actualRegret24h,
                                     range = 0f..10f
                                 )
                             }
                             
                             // Show if they followed the decision
-                            if (decision!!.followedDecision != null) {
+                            if (currentDecision.followedDecision != null) {
                                 Spacer(modifier = Modifier.height(4.dp))
                                 Divider()
                                 Row(
@@ -384,28 +425,28 @@ fun DecisionDetailScreen(
                                         style = MaterialTheme.typography.bodyMedium
                                     )
                                     Text(
-                                        text = if (decision!!.followedDecision == true) "Yes" else "No",
+                                        text = if (currentDecision.followedDecision == true) "Yes" else "No",
                                         style = MaterialTheme.typography.bodyMedium,
                                         fontWeight = FontWeight.Bold,
-                                        color = if (decision!!.followedDecision == true) BrandSuccess else MaterialTheme.colorScheme.error
+                                        color = if (currentDecision.followedDecision == true) BrandSuccess else MaterialTheme.colorScheme.error
                                     )
                                 }
                             }
                             
                             // Show optional note if exists
-                            if (decision!!.outcome?.isNotBlank() == true) {
+                            if (currentDecision.outcome?.isNotBlank() == true) {
                                 Spacer(modifier = Modifier.height(4.dp))
                                 Divider()
                                 Text(
-                                    text = decision!!.outcome,
+                                    text = currentDecision.outcome,
                                     style = MaterialTheme.typography.bodyMedium,
                                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
                                 )
                             }
                             
-                            if (decision!!.outcomeRecordedAt != null) {
+                            if (currentDecision.outcomeRecordedAt != null) {
                                 Text(
-                                    text = "Recorded on ${dateFormat.format(decision!!.outcomeRecordedAt)}",
+                                    text = "Recorded on ${dateFormat.format(currentDecision.outcomeRecordedAt)}",
                                     style = MaterialTheme.typography.labelSmall,
                                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
                                 )
@@ -432,13 +473,13 @@ fun DecisionDetailScreen(
                                 color = BrandSuccess
                             )
                             Text(
-                                text = decision!!.outcome ?: "",
+                                text = currentDecision.outcome ?: "",
                                 style = MaterialTheme.typography.bodyLarge
                             )
                             
-                            if (decision!!.outcomeRecordedAt != null) {
+                            if (currentDecision.outcomeRecordedAt != null) {
                                 Text(
-                                    text = "Recorded on ${dateFormat.format(decision!!.outcomeRecordedAt)}",
+                                    text = "Recorded on ${dateFormat.format(currentDecision.outcomeRecordedAt)}",
                                     style = MaterialTheme.typography.labelSmall,
                                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
                                 )
@@ -448,7 +489,7 @@ fun DecisionDetailScreen(
                 }
                 
                 // Regret Index
-                val regretIndex = decision!!.getRegretIndex()
+                val regretIndex = currentDecision.getRegretIndex()
                 if (regretIndex != null) {
                     Card(
                         modifier = Modifier.fillMaxWidth(),
@@ -583,7 +624,7 @@ fun DecisionDetailScreen(
                         
                         similarDecisions.forEach { similar ->
                             SimilarDecisionCard(
-                                current = decision!!,
+                                current = currentDecision,
                                 similar = similar
                             )
                         }

@@ -7,6 +7,7 @@ import com.realitycheck.app.data.Decision
 import com.realitycheck.app.data.DecisionRepository
 import com.realitycheck.app.data.AnalyticsData
 import com.realitycheck.app.notifications.NotificationScheduler
+import com.realitycheck.app.notifications.NotificationPermissionHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,6 +25,7 @@ class DecisionViewModel @Inject constructor(
 ) : ViewModel() {
     
     val decisions = repository.getAllDecisions()
+    val groups = repository.getAllGroups()
     
     private val _analytics = MutableStateFlow<AnalyticsData?>(null)
     val analytics: StateFlow<AnalyticsData?> = _analytics.asStateFlow()
@@ -31,27 +33,48 @@ class DecisionViewModel @Inject constructor(
     private val _uiState = MutableStateFlow<DecisionUiState>(DecisionUiState.Idle)
     val uiState: StateFlow<DecisionUiState> = _uiState.asStateFlow()
     
+    // Notification permission state
+    private val _notificationPermissionState = MutableStateFlow<NotificationPermissionState>(
+        NotificationPermissionState.Unknown
+    )
+    val notificationPermissionState: StateFlow<NotificationPermissionState> = 
+        _notificationPermissionState.asStateFlow()
+    
     // Cache for analytics to avoid recalculating on every update
     private var cachedAnalytics: AnalyticsData? = null
     private var lastUpdateTime: Long = 0
-    private val cacheTimeoutMs = 2000L // Cache for 2 seconds
+    private var cachedDecisionIds: Set<Long> = emptySet()
+    private var cachedDecisionHash: Int = 0
+    private val cacheTimeoutMs = 5000L // Cache for 5 seconds (increased from 2 seconds)
     
     init {
+        // Check notification permission state
+        checkNotificationPermission()
+        
         viewModelScope.launch {
             try {
                 decisions.collect { decisionsList ->
                     try {
                         val now = System.currentTimeMillis()
                         
-                        // Use cache if available and recent
-                        if (cachedAnalytics != null && 
+                        // Calculate hash of decision IDs and sizes to detect changes
+                        val currentDecisionIds = decisionsList.map { it.id }.toSet()
+                        val currentDecisionHash = decisionsList.hashCode()
+                        
+                        // Use cache if:
+                        // 1. Cache exists
+                        // 2. Cache is still valid (within timeout)
+                        // 3. Decision count hasn't changed
+                        // 4. Decision IDs haven't changed (no additions/deletions)
+                        // 5. Decision hash matches (no modifications)
+                        val cached = cachedAnalytics
+                        if (cached != null && 
                             now - lastUpdateTime < cacheTimeoutMs &&
-                            cachedAnalytics!!.decisions.size == decisionsList.size) {
-                            // Only update if decision count changed
-                            val decisionCountChanged = cachedAnalytics!!.decisions.size != decisionsList.size
-                            if (!decisionCountChanged) {
+                            cached.decisions.size == decisionsList.size &&
+                            cachedDecisionIds == currentDecisionIds &&
+                            cachedDecisionHash == currentDecisionHash) {
+                            // Data hasn't changed - skip recalculation
                                 return@collect
-                            }
                         }
                         
                         // Recalculate analytics
@@ -71,6 +94,8 @@ class DecisionViewModel @Inject constructor(
                         // Update cache
                         cachedAnalytics = newAnalytics
                         lastUpdateTime = now
+                        cachedDecisionIds = currentDecisionIds
+                        cachedDecisionHash = currentDecisionHash
                         _analytics.value = newAnalytics
                     } catch (e: Exception) {
                         // Log error but don't crash - analytics is non-critical
@@ -107,7 +132,8 @@ class DecisionViewModel @Inject constructor(
         regretChance24h: Float? = null,
         overallImpact7d: Float? = null,
         confidence: Float? = null,
-        tags: List<String> = emptyList()
+        tags: List<String> = emptyList(),
+        groupId: Long? = null
     ) {
         viewModelScope.launch {
             try {
@@ -146,15 +172,18 @@ class DecisionViewModel @Inject constructor(
                     predictedRegretChance24h = regretChance24h,
                     predictedOverallImpact7d = overallImpact7d,
                     predictionConfidence = confidence,
-                    tags = tags
+                    tags = tags,
+                    groupId = groupId
                 )
                 
                 val insertedId = repository.insertDecision(decision)
                 
-                // Schedule notification
+                // Schedule notification if permission is granted
+                if (hasNotificationPermission()) {
                 val insertedDecision = repository.getDecisionById(insertedId)
                 insertedDecision?.let { decision ->
                     NotificationScheduler.scheduleNotification(context, decision)
+                    }
                 }
                 
                 _uiState.value = DecisionUiState.Success
@@ -338,6 +367,49 @@ class DecisionViewModel @Inject constructor(
     fun resetUiState() {
         _uiState.value = DecisionUiState.Idle
     }
+    
+    /**
+     * Check current notification permission state
+     */
+    fun checkNotificationPermission() {
+        val hasPermission = NotificationPermissionHelper.hasNotificationPermission(context)
+        val canShow = NotificationPermissionHelper.canShowNotifications(context)
+        val hasExactAlarm = NotificationPermissionHelper.hasExactAlarmPermission(context)
+        
+        _notificationPermissionState.value = when {
+            hasPermission && canShow && hasExactAlarm -> NotificationPermissionState.Granted
+            !hasPermission -> NotificationPermissionState.Denied
+            !hasExactAlarm -> NotificationPermissionState.NeedsExactAlarm
+            !canShow -> NotificationPermissionState.ChannelDisabled
+            else -> NotificationPermissionState.Partial
+        }
+    }
+    
+    /**
+     * Check if notification permission is granted
+     */
+    fun hasNotificationPermission(): Boolean {
+        return NotificationPermissionHelper.hasNotificationPermission(context)
+    }
+    
+    /**
+     * Update notification permission state (called after permission request)
+     */
+    fun updateNotificationPermissionState(granted: Boolean) {
+        checkNotificationPermission()
+    }
+}
+
+/**
+ * Represents the state of notification permissions
+ */
+sealed class NotificationPermissionState {
+    object Unknown : NotificationPermissionState()
+    object Granted : NotificationPermissionState() // All permissions granted
+    object Denied : NotificationPermissionState() // Notification permission denied
+    object NeedsExactAlarm : NotificationPermissionState() // Needs exact alarm permission
+    object ChannelDisabled : NotificationPermissionState() // Notification channel disabled
+    object Partial : NotificationPermissionState() // Some permissions missing
 }
 
 sealed class DecisionUiState {

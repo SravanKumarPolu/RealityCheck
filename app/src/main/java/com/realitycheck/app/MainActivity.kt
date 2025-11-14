@@ -12,9 +12,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.realitycheck.app.data.AppPreferences
 import com.realitycheck.app.data.ThemePreferences
 import com.realitycheck.app.ui.navigation.NavGraph
 import com.realitycheck.app.ui.theme.RealityCheckTheme
+import com.realitycheck.app.ui.viewmodel.DecisionViewModel
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -67,7 +70,14 @@ fun MainContent(
                 }
             }
             
-            NavGraph(navController = navController)
+            val appPreferences = remember { AppPreferences(context) }
+            val viewModel: DecisionViewModel = hiltViewModel()
+            
+            NavGraph(
+                navController = navController,
+                appPreferences = appPreferences,
+                viewModel = viewModel
+            )
         }
     }
 }
