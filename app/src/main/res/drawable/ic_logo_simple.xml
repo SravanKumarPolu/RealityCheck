@@ -1,0 +1,16 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="48dp"
+    android:height="48dp"
+    android:viewportWidth="48"
+    android:viewportHeight="48">
+    
+    <!-- Simplified logo for app bar -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M24,4 C34,4 44,14 44,24 C44,34 34,44 24,44 C14,44 4,34 4,24 C4,14 14,4 24,4 Z"/>
+    
+    <path
+        android:fillColor="#6C5CE7"
+        android:pathData="M17,24 L21,28 L31,18"/>
+</vector>
+

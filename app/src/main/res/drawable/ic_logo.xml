@@ -1,0 +1,40 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="120dp"
+    android:height="120dp"
+    android:viewportWidth="120"
+    android:viewportHeight="120">
+    
+    <!-- Outer Circle - Represents the full perspective -->
+    <path
+        android:fillColor="#6C5CE7"
+        android:pathData="M60,10 C85,10 110,35 110,60 C110,85 85,110 60,110 C35,110 10,85 10,60 C10,35 35,10 60,10 Z"/>
+    
+    <!-- Inner Circle - Represents your prediction/view -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M60,25 C77,25 95,43 95,60 C95,77 77,95 60,95 C43,95 25,77 25,60 C25,43 43,25 60,25 Z"/>
+    
+    <!-- Checkmark - Decision point and verification -->
+    <path
+        android:fillColor="#6C5CE7"
+        android:strokeColor="#6C5CE7"
+        android:strokeWidth="3"
+        android:strokeLinecap="round"
+        android:strokeLinejoin="round"
+        android:pathData="M42,60 L52,70 L78,44"/>
+    
+    <!-- Small dot at top - Future/prediction point -->
+    <circle
+        android:fillColor="#FD79A8"
+        android:cx="60"
+        android:cy="35"
+        android:radius="3"/>
+    
+    <!-- Small dot at bottom - Reality/outcome point -->
+    <circle
+        android:fillColor="#00B894"
+        android:cx="60"
+        android:cy="85"
+        android:radius="3"/>
+</vector>
+

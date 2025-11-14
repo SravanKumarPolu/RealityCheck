@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">RealityCheck</string>
+    <string name="tagline">Predict your choices. Train your future.</string>
+    
+    <!-- Main Screen -->
+    <string name="todays_decisions">Today\'s Decisions</string>
+    <string name="active_decisions">Active Decisions</string>
+    <string name="completed_decisions">Completed Decisions</string>
+    <string name="log_decision_before_act">Log a Decision Before You Act</string>
+    <string name="create_decision">Create Decision</string>
+    <string name="analytics">Analytics</string>
+    <string name="no_decisions_yet">No decisions yet. Start tracking your choices!</string>
+    <string name="check_in_time">Check-in in %1$dh</string>
+    <string name="check_in_overdue">Check-in overdue</string>
+    
+    <!-- Decision Creation -->
+    <string name="decision_title">What decision are you making?</string>
+    <string name="decision_description">Describe the context</string>
+    <string name="prediction_label">Your Prediction</string>
+    <string name="prediction_hint">What do you think will happen?</string>
+    <string name="reminder_days">Remind me in (days)</string>
+    <string name="save_decision">Save Decision</string>
+    
+    <!-- Decision Details -->
+    <string name="record_outcome">Record Outcome</string>
+    <string name="outcome_hint">What actually happened?</string>
+    <string name="recorded_on">Recorded on %1$s</string>
+    <string name="created_on">Created on %1$s</string>
+    <string name="accuracy">Accuracy</string>
+    <string name="pending_outcome">Pending Outcome</string>
+    
+    <!-- Analytics -->
+    <string name="decision_accuracy_score">Decision Accuracy Score</string>
+    <string name="regret_map">Regret Map</string>
+    <string name="total_decisions">Total Decisions</string>
+    <string name="completed_decisions">Completed</string>
+    <string name="average_accuracy">Avg Accuracy</string>
+    <string name="overconfidence">Overconfidence Patterns</string>
+    <string name="blind_spots">Blind Spots</string>
+    
+    <!-- Common -->
+    <string name="cancel">Cancel</string>
+    <string name="save">Save</string>
+    <string name="delete">Delete</string>
+    <string name="edit">Edit</string>
+    
+    <!-- Widget -->
+    <string name="widget_description">Quick access to log decisions</string>
+</resources>
+
