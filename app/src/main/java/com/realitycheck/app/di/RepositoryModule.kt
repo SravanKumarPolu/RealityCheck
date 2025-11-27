@@ -1,6 +1,7 @@
 package com.realitycheck.app.di
 
 import com.realitycheck.app.data.DecisionDao
+import com.realitycheck.app.data.DecisionGroupDao
 import com.realitycheck.app.data.DecisionRepository
 import dagger.Module
 import dagger.Provides
@@ -14,8 +15,12 @@ object RepositoryModule {
 
     @Provides
     @Singleton
-    fun provideDecisionRepository(decisionDao: DecisionDao): DecisionRepository {
-        return DecisionRepository(decisionDao)
+    fun provideDecisionRepository(
+        decisionDao: DecisionDao,
+        decisionGroupDao: DecisionGroupDao
+    ): DecisionRepository {
+        return DecisionRepository(decisionDao, decisionGroupDao)
     }
 }
+
 

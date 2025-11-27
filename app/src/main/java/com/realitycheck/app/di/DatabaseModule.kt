@@ -22,5 +22,9 @@ object DatabaseModule {
 
     @Provides
     fun provideDecisionDao(database: DecisionDatabase) = database.decisionDao()
+
+    @Provides
+    fun provideDecisionGroupDao(database: DecisionDatabase) = database.decisionGroupDao()
 }
+
 

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Material Design 1 resources for AppCompat compatibility -->
+    <dimen name="highlight_alpha_material_colored">0.26</dimen>
+    <dimen name="hint_pressed_alpha_material_dark">0.30</dimen>
+    <dimen name="hint_alpha_material_dark">0.38</dimen>
+    <dimen name="hint_pressed_alpha_material_light">0.26</dimen>
+    <dimen name="hint_alpha_material_light">0.38</dimen>
+    <dimen name="abc_button_inset_horizontal_material">16dp</dimen>
+    <dimen name="abc_button_inset_vertical_material">6dp</dimen>
+    <dimen name="abc_button_padding_horizontal_material">16dp</dimen>
+    <dimen name="abc_button_padding_vertical_material">8dp</dimen>
+    <dimen name="abc_control_corner_material">2dp</dimen>
+    <dimen name="abc_edit_text_inset_horizontal_material">8dp</dimen>
+    <dimen name="abc_edit_text_inset_top_material">6dp</dimen>
+    <dimen name="abc_edit_text_inset_bottom_material">6dp</dimen>
+    <dimen name="abc_progress_bar_height_material">4dp</dimen>
+    <dimen name="abc_control_inset_material">16dp</dimen>
+    <dimen name="compat_button_inset_horizontal_material">16dp</dimen>
+    <dimen name="compat_button_inset_vertical_material">6dp</dimen>
+    <dimen name="compat_control_corner_material">2dp</dimen>
+    <dimen name="compat_button_padding_horizontal_material">16dp</dimen>
+    <dimen name="compat_button_padding_vertical_material">8dp</dimen>
+    <dimen name="tooltip_corner_radius">4dp</dimen>
+    <dimen name="abc_action_bar_subtitle_top_margin_material">0dp</dimen>
+    <dimen name="abc_dialog_padding_top_material">24dp</dimen>
+    <dimen name="abc_dialog_title_divider_material">8dp</dimen>
+    <dimen name="dialogPreferredPadding">24dp</dimen>
+    <dimen name="panelMenuListWidth">240dp</dimen>
+    <dimen name="listPreferredItemHeightSmall">48dp</dimen>
+    <dimen name="listPreferredItemPaddingLeft">16dp</dimen>
+    <dimen name="listPreferredItemPaddingRight">16dp</dimen>
+    <dimen name="abc_dropdownitem_icon_width">32dp</dimen>
+    <dimen name="abc_dropdownitem_text_padding_left">8dp</dimen>
+    <dimen name="abc_dropdownitem_text_padding_right">8dp</dimen>
+    <dimen name="tooltip_horizontal_padding">16dp</dimen>
+    <dimen name="tooltip_margin">8dp</dimen>
+    <dimen name="tooltip_vertical_padding">8dp</dimen>
+    <dimen name="notification_action_icon_size">24dp</dimen>
+    <dimen name="abc_dialog_list_padding_bottom_no_buttons">8dp</dimen>
+    <dimen name="abc_dialog_list_padding_top_no_title">8dp</dimen>
+    <dimen name="notification_large_icon_width">64dp</dimen>
+    <dimen name="notification_large_icon_height">64dp</dimen>
+    <dimen name="notification_right_side_padding_top">8dp</dimen>
+    <dimen name="notification_big_circle_margin">12dp</dimen>
+    <dimen name="notification_right_icon_size">24dp</dimen>
+    <dimen name="abc_select_dialog_padding_start_material">24dp</dimen>
+</resources>
+

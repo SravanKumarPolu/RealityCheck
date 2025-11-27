@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Material Design 1 attributes for AppCompat compatibility -->
+    <attr name="colorAccent" format="color" />
+    <attr name="colorControlNormal" format="color" />
+    <attr name="colorControlActivated" format="color" />
+    <attr name="dialogCornerRadius" format="dimension" />
+    <attr name="actionBarItemBackground" format="reference" />
+    <attr name="actionButtonStyle" format="reference" />
+    <attr name="actionMenuTextAppearance" format="reference" />
+    <attr name="actionMenuTextColor" format="color" />
+    <!-- Required by AppCompat layouts - must be in app namespace -->
+    <!-- Note: divider, actionBarDivider, listDividerAlertDialog, and tooltipFrameBackground are defined by AppCompat, removed to avoid duplicates -->
+    <attr name="actionModeStyle" format="reference" />
+    <attr name="actionModeTheme" format="reference" />
+    <attr name="actionModeCloseContentDescription" format="string" />
+    <attr name="srcCompat" format="reference" />
+    <attr name="actionModeCloseButtonStyle" format="reference" />
+    <attr name="activityChooserViewStyle" format="reference" />
+    <attr name="dropdownListPreferredItemHeight" format="dimension" />
+    <attr name="selectableItemBackground" format="reference" />
+    <attr name="textAppearanceLargePopupMenu" format="reference" />
+    <attr name="buttonBarStyle" format="reference" />
+    <attr name="buttonBarNeutralButtonStyle" format="reference" />
+    <attr name="buttonBarNegativeButtonStyle" format="reference" />
+    <attr name="buttonBarPositiveButtonStyle" format="reference" />
+    <attr name="actionModeCloseDrawable" format="reference" />
+    <attr name="backgroundTint" format="color" />
+    <attr name="dialogPreferredPadding" format="dimension" />
+    <attr name="textAppearanceSmallPopupMenu" format="reference" />
+    <attr name="panelMenuListWidth" format="dimension" />
+    <attr name="listPreferredItemHeightSmall" format="dimension" />
+    <attr name="listPreferredItemPaddingLeft" format="dimension" />
+    <attr name="listPreferredItemPaddingRight" format="dimension" />
+    <attr name="textAppearanceListItemSmall" format="reference" />
+    <attr name="textAppearancePopupMenuHeader" format="reference" />
+    <attr name="actionBarStyle" format="reference" />
+    <attr name="navigationContentDescription" format="string" />
+    <attr name="toolbarStyle" format="reference" />
+    <attr name="textAppearanceSearchResultSubtitle" format="reference" />
+    <attr name="textAppearanceSearchResultTitle" format="reference" />
+    <attr name="selectableItemBackgroundBorderless" format="reference" />
+    <attr name="paddingBottomNoButtons" format="dimension" />
+    <attr name="paddingTopNoTitle" format="dimension" />
+    <attr name="tooltipForegroundColor" format="color" />
+    <attr name="textColorAlertDialogListItem" format="color" />
+    <attr name="spinnerDropDownItemStyle" format="reference" />
+</resources>
+

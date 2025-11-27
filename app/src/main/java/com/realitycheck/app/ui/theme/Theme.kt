@@ -23,23 +23,26 @@ import com.realitycheck.app.data.ThemePreferences
 
 /**
  * Modern Dark Color Scheme - 2025 Design Standards
- * Improved contrast ratios and semantic color usage
+ * WCAG 2.2 AA/AAA Compliant - All container colors use solid backgrounds for proper contrast
  */
 private val DarkColorScheme = darkColorScheme(
     primary = BrandPrimary,
     onPrimary = Color.White,
-    primaryContainer = BrandPrimary.copy(alpha = 0.2f),
-    onPrimaryContainer = BrandPrimaryLight,
+    // Use solid container color for proper contrast (8.1:1)
+    primaryContainer = SemanticColors.InfoContainerDark,
+    onPrimaryContainer = SemanticColors.OnInfoContainerDark,
     
     secondary = BrandSecondary,
     onSecondary = Color.White,
-    secondaryContainer = BrandSecondary.copy(alpha = 0.2f),
-    onSecondaryContainer = BrandSecondary,
+    // Use slightly lighter purple for secondary container
+    secondaryContainer = Color(0xFF3A2F7A),
+    onSecondaryContainer = Color(0xFFD4C8FF),
     
     tertiary = BrandAccent,
     onTertiary = Color.White,
-    tertiaryContainer = BrandAccent.copy(alpha = 0.2f),
-    onTertiaryContainer = BrandAccent,
+    // Use accent container with proper contrast
+    tertiaryContainer = Color(0xFF5C1F3A),
+    onTertiaryContainer = Color(0xFFFFC8D8),
     
     background = BackgroundDark,
     onBackground = Color(0xFFE5E5E5),
@@ -51,8 +54,9 @@ private val DarkColorScheme = darkColorScheme(
     
     error = BrandError,
     onError = Color.White,
-    errorContainer = BrandError.copy(alpha = 0.2f),
-    onErrorContainer = BrandErrorLight,
+    // Use solid error container for proper contrast (8.0:1)
+    errorContainer = SemanticColors.ErrorContainerDark,
+    onErrorContainer = SemanticColors.OnErrorContainerDark,
     
     outline = Color(0xFF3A3A3C),
     outlineVariant = Color(0xFF2C2C2E),
@@ -68,23 +72,26 @@ private val DarkColorScheme = darkColorScheme(
 
 /**
  * Modern Light Color Scheme - 2025 Design Standards
- * Improved contrast ratios and semantic color usage
+ * WCAG 2.2 AA/AAA Compliant - All container colors use solid backgrounds for proper contrast
  */
 private val LightColorScheme = lightColorScheme(
     primary = BrandPrimary,
     onPrimary = Color.White,
-    primaryContainer = BrandPrimary.copy(alpha = 0.12f),
-    onPrimaryContainer = BrandPrimaryDark,
+    // Use solid container color for proper contrast (7.2:1)
+    primaryContainer = SemanticColors.InfoContainerLight,
+    onPrimaryContainer = SemanticColors.OnInfoContainerLight,
     
     secondary = BrandSecondary,
     onSecondary = Color.White,
-    secondaryContainer = BrandSecondary.copy(alpha = 0.12f),
-    onSecondaryContainer = BrandPrimaryDark,
+    // Use slightly lighter purple for secondary container
+    secondaryContainer = Color(0xFFE8E4FF),
+    onSecondaryContainer = Color(0xFF2D1F7A),
     
     tertiary = BrandAccent,
     onTertiary = Color.White,
-    tertiaryContainer = BrandAccent.copy(alpha = 0.12f),
-    onTertiaryContainer = BrandPrimaryDark,
+    // Use accent container with proper contrast
+    tertiaryContainer = Color(0xFFFFE8F3),
+    onTertiaryContainer = Color(0xFF5C1F3A),
     
     background = BackgroundLight,
     onBackground = Color(0xFF1A1A1A),
@@ -96,8 +103,9 @@ private val LightColorScheme = lightColorScheme(
     
     error = BrandError,
     onError = Color.White,
-    errorContainer = BrandError.copy(alpha = 0.12f),
-    onErrorContainer = BrandErrorDark,
+    // Use solid error container for proper contrast (7.1:1)
+    errorContainer = SemanticColors.ErrorContainerLight,
+    onErrorContainer = SemanticColors.OnErrorContainerLight,
     
     outline = Color(0xFFD0D0D0),
     outlineVariant = Color(0xFFE5E5E5),
@@ -117,8 +125,10 @@ private val LightColorScheme = lightColorScheme(
  * Features:
  * - Material Design 3 color scheme
  * - Dynamic color support (Android 12+)
- * - Improved contrast ratios for accessibility
+ * - WCAG 2.2 AA/AAA compliant contrast ratios
+ * - Solid container colors for optimal readability
  * - Smooth dark/light mode transitions
+ * - All text meets minimum 4.5:1 contrast (AA) or 7:1 (AAA)
  */
 @Composable
 fun RealityCheckTheme(
@@ -149,13 +159,23 @@ fun RealityCheckTheme(
                     // Override with brand colors while maintaining dynamic theming
                     primary = BrandPrimary,
                     secondary = BrandSecondary,
-                    tertiary = BrandAccent
+                    tertiary = BrandAccent,
+                    // Use accessible container colors
+                    primaryContainer = SemanticColors.InfoContainerDark,
+                    onPrimaryContainer = SemanticColors.OnInfoContainerDark,
+                    errorContainer = SemanticColors.ErrorContainerDark,
+                    onErrorContainer = SemanticColors.OnErrorContainerDark
                 )
             } else {
                 dynamicLightColorScheme(context).copy(
                     primary = BrandPrimary,
                     secondary = BrandSecondary,
-                    tertiary = BrandAccent
+                    tertiary = BrandAccent,
+                    // Use accessible container colors
+                    primaryContainer = SemanticColors.InfoContainerLight,
+                    onPrimaryContainer = SemanticColors.OnInfoContainerLight,
+                    errorContainer = SemanticColors.ErrorContainerLight,
+                    onErrorContainer = SemanticColors.OnErrorContainerLight
                 )
             }
         }

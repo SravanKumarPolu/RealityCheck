@@ -1,91 +1,119 @@
 # 🚀 Quick Start - Run RealityCheck
 
-## Prerequisites Missing
+## Prerequisites
 
-To run this Android project, you need:
+You need the following tools to run this Android project:
 
-### 1. Java/JDK 17+
-**Install via one of these methods:**
+1. **Android Studio** (recommended - includes everything)
+   - Download from: https://developer.android.com/studio
+   - Includes Android SDK, Gradle, and JDK
+   - Or check if already installed: `/Applications/Android Studio.app`
 
-**Option A: Android Studio (Recommended - includes everything)**
-```bash
-# Download and install from:
-open https://developer.android.com/studio
+2. **JDK 17 or higher**
+   - Android Studio includes JDK, or install separately
+   - Via Homebrew: `brew install openjdk@17`
+   - Set JAVA_HOME: `export JAVA_HOME=/opt/homebrew/opt/openjdk@17/libexec/openjdk.jdk/Contents/Home`
 
-# After installation:
-open -a "Android Studio" /Users/sravanpolu/Projects/RealityCheck
-```
+3. **Android SDK**
+   - Usually installed with Android Studio
+   - Or install via command line tools
+   - Set ANDROID_HOME: `export ANDROID_HOME=$HOME/Library/Android/sdk`
+   - Add to PATH: `export PATH=$PATH:$ANDROID_HOME/tools:$ANDROID_HOME/platform-tools`
 
-**Option B: JDK via Homebrew**
-```bash
-# Fix Homebrew permissions first:
-sudo chown -R $(whoami) /usr/local/Homebrew
+## Quick Start (Using Android Studio)
 
-# Then install JDK:
-brew install openjdk@17
+1. **Open the project:**
+   ```bash
+   # Open Android Studio
+   # File → Open → Select /Users/sravanpolu/Projects/RealityCheck
+   ```
 
-# Set JAVA_HOME:
-export JAVA_HOME=/opt/homebrew/opt/openjdk@17/libexec/openjdk.jdk/Contents/Home
-```
+2. **Let Gradle sync:**
+   - Android Studio will automatically download dependencies
+   - Wait for "Gradle Sync" to complete
 
-### 2. Android SDK
+3. **Set up an emulator or device:**
+   - **Emulator**: Tools → Device Manager → Create Virtual Device
+   - **Physical Device**: Enable Developer Options & USB Debugging
 
-**If you installed Android Studio:**
-- Open Android Studio
-- Go to: Settings/Preferences → Appearance & Behavior → System Settings → Android SDK
-- Install Android SDK Platform 34
-- Set ANDROID_HOME:
-  ```bash
-  export ANDROID_HOME=$HOME/Library/Android/sdk
-  export PATH=$PATH:$ANDROID_HOME/tools:$ANDROID_HOME/platform-tools
-  ```
+4. **Run the app:**
+   - Click the green "Run" button (▶️)
+   - Or press `Shift + F10` (Windows/Linux) or `Control + R` (Mac)
 
-## Running the Project
+## Alternative: Command Line
 
-### Method 1: Android Studio (Easiest)
-1. Open Android Studio
-2. File → Open → Select `/Users/sravanpolu/Projects/RealityCheck`
-3. Wait for Gradle sync
-4. Click Run ▶️ button
-5. Select an emulator or connected device
+### Build and Install
 
-### Method 2: Command Line
 ```bash
 cd /Users/sravanpolu/Projects/RealityCheck
 
-# Make sure Java and Android SDK are set up first
-export JAVA_HOME=/path/to/jdk
-export ANDROID_HOME=$HOME/Library/Android/sdk
+# Make gradlew executable (if needed)
+chmod +x ./gradlew
 
-# Build the project
+# Build debug APK
 ./gradlew assembleDebug
 
 # Install on connected device/emulator
 ./gradlew installDebug
 
-# Check connected devices
-adb devices
+# Or run directly
+./gradlew installDebug && adb shell am start -n com.realitycheck.app/.MainActivity
 ```
+
+### Check for Connected Devices
+
+```bash
+# Check if device/emulator is connected
+adb devices
+
+# If no devices, start an emulator:
+emulator -list-avds
+emulator -avd <AVD_NAME>
+```
+
+## Troubleshooting
+
+### Issue: "Gradle not found"
+- **Solution**: Install Android Studio (includes Gradle) or install Gradle separately
+- On macOS: `brew install gradle`
+
+### Issue: "SDK not found"
+- **Solution**: 
+  1. Install Android Studio (easiest)
+  2. Or install SDK via command line tools
+  3. Set `ANDROID_HOME` environment variable
+
+### Issue: "Java not found"
+- **Solution**: 
+  1. Install JDK 17+ (`brew install openjdk@17`)
+  2. Set `JAVA_HOME` environment variable
+  3. Or use Android Studio's bundled JDK
+
+### Issue: "No devices found"
+- **Solution**: 
+  1. Start an Android emulator from Android Studio
+  2. Or connect a physical device with USB debugging enabled
+
+## Project Configuration
+
+- **Package**: `com.realitycheck.app`
+- **Min SDK**: 24 (Android 7.0)
+- **Target SDK**: 34 (Android 14)
+- **Gradle Version**: 8.2
+- **Kotlin Version**: 1.9.20
+
+## Recommended Approach
+
+**For development, use Android Studio** - it handles:
+- ✅ Gradle wrapper generation
+- ✅ Android SDK setup
+- ✅ Emulator management
+- ✅ Debugging tools
+- ✅ Code completion and IntelliSense
 
 ## Current Project Status
 
-✅ Gradle wrapper configured
-✅ Project structure complete
-✅ All source files ready
-❌ Java/JDK not installed
-❌ Android SDK not installed
-
-## Next Steps
-
-1. **Install Android Studio** (recommended - includes everything):
-   - Visit: https://developer.android.com/studio
-   - Download and install
-   - Open the project in Android Studio
-   - Click Run ▶️
-
-2. **Or install tools separately:**
-   - Install JDK 17+
-   - Install Android SDK
-   - Run `./setup_and_run.sh`
-
-The project is ready - you just need the development tools installed!
+✅ Gradle wrapper configured  
+✅ Project structure complete  
+✅ All source files ready  
+✅ Ready to build and run

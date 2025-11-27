@@ -19,5 +19,35 @@
     <color name="brand_error">#E17055</color>
     <color name="background_light">#F8F9FA</color>
     <color name="surface_elevated">#FFFFFF</color>
+    
+    <!-- Material Design 1 resources for AppCompat compatibility -->
+    <color name="background_material_dark">#121212</color>
+    <color name="background_material_light">#FFFFFF</color>
+    <color name="foreground_material_dark">#FFFFFF</color>
+    <color name="foreground_material_light">#000000</color>
+    <color name="bright_foreground_material_dark">#FFFFFF</color>
+    <color name="bright_foreground_material_light">#000000</color>
+    <color name="bright_foreground_disabled_material_dark">#80FFFFFF</color>
+    <color name="bright_foreground_disabled_material_light">#80000000</color>
+    <color name="primary_text_default_material_dark">#FFFFFF</color>
+    <color name="primary_text_disabled_material_dark">#80FFFFFF</color>
+    <color name="primary_text_default_material_light">#DE000000</color>
+    <color name="primary_text_disabled_material_light">#61000000</color>
+    <color name="secondary_text_default_material_dark">#B3FFFFFF</color>
+    <color name="secondary_text_disabled_material_dark">#52FFFFFF</color>
+    <color name="secondary_text_default_material_light">#8A000000</color>
+    <color name="secondary_text_disabled_material_light">#1F000000</color>
+    <color name="abc_search_url_text_normal">#FF9E9E9E</color>
+    <color name="abc_search_url_text_selected">#FF212121</color>
+    <color name="abc_search_url_text_pressed">#FF000000</color>
+    <color name="switch_thumb_normal_material_dark">#FF424242</color>
+    <color name="switch_thumb_disabled_material_dark">#FF1F1F1F</color>
+    <color name="switch_thumb_normal_material_light">#FAFAFA</color>
+    <color name="switch_thumb_disabled_material_light">#FFBDBDBD</color>
+    <color name="primary_dark_material_dark">#000000</color>
+    <color name="tooltip_background_dark">#F5F5F5</color>
+    <color name="tooltip_background_light">#F5F5F5</color>
+    <color name="androidx_core_ripple_material_light">#1F000000</color>
+    <color name="notification_icon_bg_color">#FF424242</color>
 </resources>
 

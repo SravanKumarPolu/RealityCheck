@@ -22,6 +22,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
@@ -43,6 +45,7 @@ import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(
     onNavigateToCreate: () -> Unit,
@@ -327,9 +330,7 @@ fun DecisionCard(
         modifier = Modifier
             .fillMaxWidth()
             .scale(scale)
-            .clickable(
-                interactionSource = interactionSource,
-                indication = null,
+            .enhancedClickable(
                 onClick = onClick
             ),
         shape = RoundedCornerShape(Radius.lg),
@@ -398,7 +399,7 @@ fun DecisionCard(
                 ) {
                     items(decision.tags) { tag ->
                         Surface(
-                            shape = RoundedCornerShape(Radius.xs),
+                            shape = RoundedCornerShape(Radius.sm),
                             color = MaterialTheme.colorScheme.secondaryContainer,
                             modifier = Modifier.padding(end = Spacing.xs)
                         ) {
@@ -425,7 +426,7 @@ fun DecisionCard(
                 ) {
                     Icon(
                         imageVector = Icons.Default.Add,
-                        contentDescription = null,
+                        contentDescription = "Check-in time", // Descriptive for screen readers
                         modifier = Modifier.size(14.dp),
                         tint = MaterialTheme.colorScheme.primary
                     )
@@ -473,8 +474,7 @@ fun EmptyState(
             AnimatedVisibility(
                 visible = true,
                 enter = fadeIn(
-                    delayMillis = 200,
-                    animationSpec = tween(400)
+                    animationSpec = tween(400, delayMillis = 200)
                 ) + slideInVertically(
                     initialOffsetY = { it / 4 },
                     animationSpec = spring(
@@ -506,8 +506,7 @@ fun EmptyState(
             AnimatedVisibility(
                 visible = true,
                 enter = fadeIn(
-                    delayMillis = 400,
-                    animationSpec = tween(400)
+                    animationSpec = tween(400, delayMillis = 400)
                 ) + slideInVertically(
                     initialOffsetY = { it / 2 },
                     animationSpec = spring(
@@ -551,24 +550,8 @@ fun EmptyState(
     }
 }
 
-// Extension for press animation
-fun Modifier.pressAnimation(): Modifier = composed {
-    val interactionSource = remember { MutableInteractionSource() }
-    val isPressed by interactionSource.collectIsPressedAsState()
-    
-    val scale by animateFloatAsState(
-        targetValue = if (isPressed) 0.96f else 1f,
-        animationSpec = spring(
-            dampingRatio = Spring.DampingRatioMediumBouncy,
-            stiffness = Spring.StiffnessMedium
-        ),
-        label = "press_scale"
-    )
-    
-    this
-        .clickable(interactionSource = interactionSource, indication = null) {}
-        .scale(scale)
-}
+// Note: Press animation is now handled in DesignSystem.kt
+// Material 3's default indication includes focus indicators automatically
 
 @Composable
 fun StreakCard(streak: Int) {

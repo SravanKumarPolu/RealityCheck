@@ -23,7 +23,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.realitycheck.app.data.AppPreferences
-import com.realitycheck.app.ui.components.Logo
 import com.realitycheck.app.ui.theme.*
 import com.realitycheck.app.ui.viewmodel.DecisionViewModel
 
@@ -222,7 +221,6 @@ private data class OnboardingPage(
     val additionalContent: (@Composable () -> Unit)? = null
 )
 
-@Composable
 private fun getOnboardingPages(): List<OnboardingPage> {
     return listOf(
         OnboardingPage(

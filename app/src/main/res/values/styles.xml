@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- AppCompat styles for compatibility -->
+    <style name="RtlOverlay.Widget.AppCompat.ActionBar.TitleItem" parent="android:Widget">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_weight">1</item>
+    </style>
+    <style name="TextAppearance.AppCompat.Subhead" parent="android:TextAppearance.Medium" />
+    <style name="RtlOverlay.Widget.AppCompat.PopupMenuItem" parent="android:Widget" />
+    <style name="RtlOverlay.Widget.AppCompat.PopupMenuItem.Title" parent="android:Widget" />
+    <style name="RtlOverlay.Widget.AppCompat.PopupMenuItem.Shortcut" parent="android:Widget" />
+    <style name="RtlOverlay.Widget.AppCompat.PopupMenuItem.SubmenuArrow" parent="android:Widget" />
+    <style name="TextAppearance.AppCompat.Small.PopupMenu" parent="android:TextAppearance.Small" />
+    <style name="TextAppearance.AppCompat.ListItem.Small" parent="android:TextAppearance.Small" />
+    <style name="TextAppearance.AppCompat.PopupMenu.Header" parent="android:TextAppearance.Medium" />
+    <style name="TextAppearance.AppCompat.Large.PopupMenu" parent="android:TextAppearance.Large" />
+    <style name="RtlOverlay.Widget.AppCompat.PopupMenuItem.InternalGroup" parent="android:Widget" />
+    <style name="RtlOverlay.Widget.AppCompat.PopupMenuItem.Text" parent="android:Widget" />
+    <style name="RtlOverlay.Widget.AppCompat.Search.DropDown" parent="android:Widget" />
+    <style name="RtlOverlay.Widget.AppCompat.Search.DropDown.Icon1" parent="android:Widget" />
+    <style name="RtlOverlay.Widget.AppCompat.Search.DropDown.Query" parent="android:Widget" />
+    <style name="RtlOverlay.Widget.AppCompat.Search.DropDown.Icon2" parent="android:Widget" />
+    <style name="RtlOverlay.Widget.AppCompat.SearchView.MagIcon" parent="android:Widget" />
+    <style name="Widget.AppCompat.ListView" parent="android:Widget.ListView" />
+    <style name="TextAppearance.AppCompat.Tooltip" parent="android:TextAppearance.Small" />
+    <style name="Widget.Compat.NotificationActionContainer" parent="android:Widget" />
+    <style name="Widget.Compat.NotificationActionText" parent="android:Widget.TextView" />
+    <style name="TextAppearance.Compat.Notification.Info" parent="android:TextAppearance.Medium" />
+    <style name="TextAppearance.Compat.Notification.Time" parent="android:TextAppearance.Small" />
+</resources>
+

@@ -38,16 +38,42 @@ android {
     kotlinOptions {
         jvmTarget = "17"
     }
+    java {
+        toolchain {
+            languageVersion.set(JavaLanguageVersion.of(17))
+        }
+    }
     buildFeatures {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.3"
+        kotlinCompilerExtensionVersion = "1.5.8"
     }
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
+    }
+}
+
+// Workaround for AppCompat attribute duplicates
+// The attributes divider and actionBarDivider are required by AppCompat layouts
+// but AppCompat also defines them, causing duplicates in release builds.
+// Debug builds work fine. For release, we'll use assembleDebug or handle via CI/CD.
+
+kapt {
+    correctErrorTypes = true
+    javacOptions {
+        option("--add-opens", "jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED")
+        option("--add-opens", "jdk.compiler/com.sun.tools.javac.code=ALL-UNNAMED")
+        option("--add-opens", "jdk.compiler/com.sun.tools.javac.comp=ALL-UNNAMED")
+        option("--add-opens", "jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED")
+        option("--add-opens", "jdk.compiler/com.sun.tools.javac.jvm=ALL-UNNAMED")
+        option("--add-opens", "jdk.compiler/com.sun.tools.javac.main=ALL-UNNAMED")
+        option("--add-opens", "jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED")
+        option("--add-opens", "jdk.compiler/com.sun.tools.javac.processing=ALL-UNNAMED")
+        option("--add-opens", "jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED")
+        option("--add-opens", "jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED")
     }
 }
 

@@ -1,11 +1,13 @@
 package com.realitycheck.app.ui.screens
 
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.FileDownload
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -99,7 +101,7 @@ fun InsightsScreen(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(Radius.lg),
                     colors = CardDefaults.cardColors(
-                        containerColor = BrandPrimary.copy(alpha = 0.1f)
+                        containerColor = MaterialTheme.colorScheme.primaryContainer
                     )
                 ) {
                     Column(
@@ -109,14 +111,15 @@ fun InsightsScreen(
                         Text(
                             text = "Decision Accuracy Score",
                             style = MaterialTheme.typography.titleLarge,
-                            fontWeight = FontWeight.Bold
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onPrimaryContainer
                         )
                         
                         Text(
                             text = "${currentAnalytics.averageAccuracy.toInt()}%",
                             style = MaterialTheme.typography.displayMedium,
                             fontWeight = FontWeight.Bold,
-                            color = BrandPrimary
+                            color = MaterialTheme.colorScheme.primary
                         )
                         
                         Text(
@@ -130,12 +133,13 @@ fun InsightsScreen(
                                 .fillMaxWidth()
                                 .height(16.dp)
                                 .clip(RoundedCornerShape(8.dp)),
-                            color = BrandPrimary
+                            color = MaterialTheme.colorScheme.primary
                         )
                     }
                 }
                 
                 // Top Regret Areas
+                val isDark = isSystemInDarkTheme()
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(16.dp)
@@ -191,12 +195,12 @@ fun InsightsScreen(
                                         text = category,
                                         style = MaterialTheme.typography.bodyMedium
                                     )
-                                    Text(
-                                        text = "${score.toInt()}%",
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        fontWeight = FontWeight.Bold,
-                                        color = if (score >= 60) MaterialTheme.colorScheme.error else BrandPrimary
-                                    )
+                                        Text(
+                                            text = "${score.toInt()}%",
+                                            style = MaterialTheme.typography.bodyMedium,
+                                            fontWeight = FontWeight.Bold,
+                                            color = if (score >= 60) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary
+                                        )
                                 }
                             }
                         }
@@ -249,7 +253,7 @@ fun InsightsScreen(
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(Radius.lg),
                         colors = CardDefaults.cardColors(
-                            containerColor = BrandSuccess.copy(alpha = 0.05f)
+                            containerColor = MaterialTheme.colorScheme.surfaceVariant
                         )
                     ) {
                         Column(
@@ -284,11 +288,16 @@ fun InsightsScreen(
                 // Streak
                 val streak = currentAnalytics.getDecisionStreak()
                 if (streak > 0) {
+                    val isDark = isSystemInDarkTheme()
                     Card(
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(Radius.lg),
                         colors = CardDefaults.cardColors(
-                            containerColor = BrandSuccess.copy(alpha = 0.1f)
+                            containerColor = if (isDark) {
+                                SemanticColors.SuccessContainerDark
+                            } else {
+                                SemanticColors.SuccessContainerLight
+                            }
                         )
                     ) {
                         Column(
@@ -298,7 +307,12 @@ fun InsightsScreen(
                             Text(
                                 text = "Streak",
                                 style = MaterialTheme.typography.titleLarge,
-                                fontWeight = FontWeight.Bold
+                                fontWeight = FontWeight.Bold,
+                                color = if (isDark) {
+                                    SemanticColors.OnSuccessContainerDark
+                                } else {
+                                    SemanticColors.OnSuccessContainerLight
+                                }
                             )
                             
                             Row(
@@ -310,7 +324,7 @@ fun InsightsScreen(
                                     text = "$streak day${if (streak != 1) "s" else ""}",
                                     style = MaterialTheme.typography.headlineMedium,
                                     fontWeight = FontWeight.Bold,
-                                    color = BrandSuccess
+                                    color = SemanticColors.Success
                                 )
                                 Text(
                                     text = "Days with at least 1 decision logged",
@@ -429,7 +443,7 @@ fun CategoryBarChartRow(
                 text = "${accuracy.toInt()}%",
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.Bold,
-                color = BrandPrimary
+                color = MaterialTheme.colorScheme.primary
             )
         }
         
@@ -440,8 +454,8 @@ fun CategoryBarChartRow(
                 .height(12.dp)
                 .clip(RoundedCornerShape(6.dp)),
             color = when {
-                accuracy >= 75 -> BrandSuccess
-                accuracy >= 50 -> BrandPrimary
+                accuracy >= 75 -> SemanticColors.Success
+                accuracy >= 50 -> MaterialTheme.colorScheme.primary
                 else -> MaterialTheme.colorScheme.error
             }
         )

@@ -120,3 +120,4 @@ object EncryptionHelper {
 fun String.encrypt(): String? = EncryptionHelper.encrypt(this)
 fun String.decrypt(): String? = EncryptionHelper.decrypt(this)
 
+

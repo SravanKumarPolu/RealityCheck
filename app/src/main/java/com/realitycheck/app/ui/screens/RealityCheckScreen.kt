@@ -134,7 +134,7 @@ fun RealityCheckScreen(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(Radius.lg),
                 colors = CardDefaults.cardColors(
-                    containerColor = BrandPrimary.copy(alpha = 0.1f)
+                    containerColor = MaterialTheme.colorScheme.primaryContainer
                 )
             ) {
                 Column(
@@ -165,7 +165,7 @@ fun RealityCheckScreen(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(Radius.md),
                 colors = CardDefaults.cardColors(
-                    containerColor = BrandSuccess.copy(alpha = 0.05f)
+                    containerColor = MaterialTheme.colorScheme.surfaceVariant
                 )
             ) {
                 Column(
@@ -291,7 +291,7 @@ fun RealityCheckScreen(
                 shape = RoundedCornerShape(Radius.md),
                 enabled = followedDecision != null,
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = BrandSuccess
+                    containerColor = SemanticColors.Success
                 )
             ) {
                 Text(

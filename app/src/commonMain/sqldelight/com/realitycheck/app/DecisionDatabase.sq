@@ -1,0 +1,101 @@
+-- Decisions table
+CREATE TABLE IF NOT EXISTS decisions (
+    id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+    title TEXT NOT NULL,
+    description TEXT NOT NULL,
+    prediction TEXT NOT NULL,
+    outcome TEXT,
+    createdAt INTEGER NOT NULL,
+    reminderDate INTEGER,
+    outcomeRecordedAt INTEGER,
+    category TEXT,
+    predictedEnergy24h REAL,
+    predictedMood24h REAL,
+    predictedStress24h REAL,
+    predictedRegretChance24h REAL,
+    predictedOverallImpact7d REAL,
+    predictionConfidence REAL,
+    actualEnergy24h REAL,
+    actualMood24h REAL,
+    actualStress24h REAL,
+    actualRegret24h REAL,
+    followedDecision INTEGER,
+    tags TEXT,
+    groupId INTEGER
+);
+
+CREATE INDEX IF NOT EXISTS index_decisions_category ON decisions(category);
+CREATE INDEX IF NOT EXISTS index_decisions_groupId ON decisions(groupId);
+CREATE INDEX IF NOT EXISTS index_decisions_createdAt ON decisions(createdAt);
+
+-- Decision Groups table
+CREATE TABLE IF NOT EXISTS decision_groups (
+    id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+    name TEXT NOT NULL,
+    description TEXT NOT NULL,
+    color TEXT NOT NULL,
+    createdAt INTEGER NOT NULL,
+    updatedAt INTEGER NOT NULL
+);
+
+CREATE INDEX IF NOT EXISTS index_decision_groups_name ON decision_groups(name);
+
+-- Queries for Decision
+selectAllDecisions:
+SELECT * FROM decisions ORDER BY createdAt DESC;
+
+selectDecisionById:
+SELECT * FROM decisions WHERE id = ?;
+
+selectCompletedDecisions:
+SELECT * FROM decisions WHERE outcome IS NOT NULL OR actualEnergy24h IS NOT NULL ORDER BY createdAt DESC;
+
+selectDecisionsByCategory:
+SELECT * FROM decisions WHERE category = ? ORDER BY createdAt DESC;
+
+selectDecisionsByGroup:
+SELECT * FROM decisions WHERE groupId = ? ORDER BY createdAt DESC;
+
+selectAllCategories:
+SELECT DISTINCT category FROM decisions WHERE category IS NOT NULL;
+
+selectAllTags:
+SELECT DISTINCT tags FROM decisions WHERE tags IS NOT NULL AND tags != '';
+
+selectCompletionRate:
+SELECT AVG(CASE WHEN outcome IS NOT NULL OR actualEnergy24h IS NOT NULL THEN 1 ELSE 0 END) * 100 FROM decisions;
+
+insertDecision:
+INSERT INTO decisions (title, description, prediction, outcome, createdAt, reminderDate, outcomeRecordedAt, category, predictedEnergy24h, predictedMood24h, predictedStress24h, predictedRegretChance24h, predictedOverallImpact7d, predictionConfidence, actualEnergy24h, actualMood24h, actualStress24h, actualRegret24h, followedDecision, tags, groupId)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+
+updateDecision:
+UPDATE decisions
+SET title = ?, description = ?, prediction = ?, outcome = ?, reminderDate = ?, outcomeRecordedAt = ?, category = ?, predictedEnergy24h = ?, predictedMood24h = ?, predictedStress24h = ?, predictedRegretChance24h = ?, predictedOverallImpact7d = ?, predictionConfidence = ?, actualEnergy24h = ?, actualMood24h = ?, actualStress24h = ?, actualRegret24h = ?, followedDecision = ?, tags = ?, groupId = ?
+WHERE id = ?;
+
+deleteDecision:
+DELETE FROM decisions WHERE id = ?;
+
+deleteAllDecisions:
+DELETE FROM decisions;
+
+-- Queries for DecisionGroup
+selectAllGroups:
+SELECT * FROM decision_groups ORDER BY name ASC;
+
+selectGroupById:
+SELECT * FROM decision_groups WHERE id = ?;
+
+insertGroup:
+INSERT INTO decision_groups (name, description, color, createdAt, updatedAt)
+VALUES (?, ?, ?, ?, ?);
+
+updateGroup:
+UPDATE decision_groups
+SET name = ?, description = ?, color = ?, updatedAt = ?
+WHERE id = ?;
+
+deleteGroup:
+DELETE FROM decision_groups WHERE id = ?;
+

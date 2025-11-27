@@ -16,7 +16,8 @@ object DatabaseProvider {
     }
     
     fun getRepository(): DecisionRepository {
-        return DecisionRepository(getDatabase().decisionDao())
+        val db = getDatabase()
+        return DecisionRepository(db.decisionDao(), db.decisionGroupDao())
     }
 }
 

@@ -1,5 +1,6 @@
 package com.realitycheck.app.ui.screens
 
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -103,8 +104,8 @@ fun DecisionDetailScreen(
         return
     }
     
-    // Safe reference after null check
-    val currentDecision = decision
+    // Safe reference after null check - we know it's not null here
+    val currentDecision = decision!!
     val isCompleted = currentDecision.isCompleted()
     val accuracy = currentDecision.getAccuracy()
     
@@ -123,10 +124,8 @@ fun DecisionDetailScreen(
                 actions = {
                     IconButton(
                         onClick = {
-                            currentDecision?.let {
-                                viewModel.deleteDecision(it)
+                            viewModel.deleteDecision(currentDecision)
                             onNavigateBack()
-                            }
                         }
                     ) {
                         Icon(
@@ -145,8 +144,8 @@ fun DecisionDetailScreen(
             if (!isCompleted) {
                 FloatingActionButton(
                     onClick = { onNavigateToRealityCheck() },
-                    containerColor = BrandSuccess,
-                    contentColor = Color.White
+                    containerColor = SemanticColors.Success,
+                    contentColor = SemanticColors.OnSuccess
                 ) {
                     Text("Reality\nCheck", style = MaterialTheme.typography.labelSmall)
                 }
@@ -239,7 +238,7 @@ fun DecisionDetailScreen(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(Radius.lg),
                     colors = CardDefaults.cardColors(
-                        containerColor = BrandPrimary.copy(alpha = 0.1f)
+                        containerColor = MaterialTheme.colorScheme.primaryContainer
                     )
                 ) {
                     Column(
@@ -250,7 +249,7 @@ fun DecisionDetailScreen(
                             text = "Your Predictions",
                             style = MaterialTheme.typography.labelLarge,
                             fontWeight = FontWeight.Bold,
-                            color = BrandPrimary
+                            color = MaterialTheme.colorScheme.onPrimaryContainer
                         )
                         
                         // Short-term predictions (24h)
@@ -305,7 +304,7 @@ fun DecisionDetailScreen(
                                     text = "${currentDecision.predictionConfidence.toInt()}%",
                                     style = MaterialTheme.typography.bodyMedium,
                                     fontWeight = FontWeight.Bold,
-                                    color = BrandPrimary
+                                    color = MaterialTheme.colorScheme.primary
                                 )
                             }
                         }
@@ -328,7 +327,7 @@ fun DecisionDetailScreen(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(Radius.lg),
                     colors = CardDefaults.cardColors(
-                        containerColor = BrandPrimary.copy(alpha = 0.1f)
+                        containerColor = MaterialTheme.colorScheme.primaryContainer
                     )
                 ) {
                     Column(
@@ -339,7 +338,7 @@ fun DecisionDetailScreen(
                             text = "Your Prediction",
                             style = MaterialTheme.typography.labelLarge,
                             fontWeight = FontWeight.Bold,
-                            color = BrandPrimary
+                            color = MaterialTheme.colorScheme.onPrimaryContainer
                         )
                         Text(
                             text = currentDecision.prediction,
@@ -357,11 +356,16 @@ fun DecisionDetailScreen(
                                               currentDecision.actualRegret24h != null
                 
                 if (hasQuantitativeOutcomes) {
+                    val isDark = isSystemInDarkTheme()
                     Card(
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(Radius.lg),
                         colors = CardDefaults.cardColors(
-                            containerColor = BrandSuccess.copy(alpha = 0.1f)
+                            containerColor = if (isDark) {
+                                SemanticColors.SuccessContainerDark
+                            } else {
+                                SemanticColors.SuccessContainerLight
+                            }
                         )
                     ) {
                         Column(
@@ -372,7 +376,11 @@ fun DecisionDetailScreen(
                                 text = "Actual Outcomes",
                                 style = MaterialTheme.typography.labelLarge,
                                 fontWeight = FontWeight.Bold,
-                                color = BrandSuccess
+                                color = if (isDark) {
+                                    SemanticColors.OnSuccessContainerDark
+                                } else {
+                                    SemanticColors.OnSuccessContainerLight
+                                }
                             )
                             
                             // Show comparison: Predicted vs Actual
@@ -428,7 +436,7 @@ fun DecisionDetailScreen(
                                         text = if (currentDecision.followedDecision == true) "Yes" else "No",
                                         style = MaterialTheme.typography.bodyMedium,
                                         fontWeight = FontWeight.Bold,
-                                        color = if (currentDecision.followedDecision == true) BrandSuccess else MaterialTheme.colorScheme.error
+                                        color = if (currentDecision.followedDecision == true) SemanticColors.Success else MaterialTheme.colorScheme.error
                                     )
                                 }
                             }
@@ -455,11 +463,16 @@ fun DecisionDetailScreen(
                     }
                 } else {
                     // Fall back to text-only outcome display
+                    val isDark = isSystemInDarkTheme()
                     Card(
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(Radius.lg),
                         colors = CardDefaults.cardColors(
-                            containerColor = BrandSuccess.copy(alpha = 0.1f)
+                            containerColor = if (isDark) {
+                                SemanticColors.SuccessContainerDark
+                            } else {
+                                SemanticColors.SuccessContainerLight
+                            }
                         )
                     ) {
                         Column(
@@ -470,7 +483,11 @@ fun DecisionDetailScreen(
                                 text = "Actual Outcome",
                                 style = MaterialTheme.typography.labelLarge,
                                 fontWeight = FontWeight.Bold,
-                                color = BrandSuccess
+                                color = if (isDark) {
+                                    SemanticColors.OnSuccessContainerDark
+                                } else {
+                                    SemanticColors.OnSuccessContainerLight
+                                }
                             )
                             Text(
                                 text = currentDecision.outcome ?: "",
@@ -491,11 +508,16 @@ fun DecisionDetailScreen(
                 // Regret Index
                 val regretIndex = currentDecision.getRegretIndex()
                 if (regretIndex != null) {
+                    val isDark = isSystemInDarkTheme()
                     Card(
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(Radius.lg),
                         colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.error.copy(alpha = 0.1f)
+                            containerColor = if (isDark) {
+                                MaterialTheme.colorScheme.errorContainer
+                            } else {
+                                MaterialTheme.colorScheme.errorContainer
+                            }
                         )
                     ) {
                         Column(
@@ -510,13 +532,14 @@ fun DecisionDetailScreen(
                                 Text(
                                     text = "Regret Index",
                                     style = MaterialTheme.typography.titleMedium,
-                                    fontWeight = FontWeight.Bold
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.onErrorContainer
                                 )
                                 Text(
                                     text = "${regretIndex.toInt()}%",
                                     style = MaterialTheme.typography.headlineMedium,
                                     fontWeight = FontWeight.Bold,
-                                    color = if (regretIndex < 50) BrandSuccess else MaterialTheme.colorScheme.error
+                                    color = if (regretIndex < 50) SemanticColors.Success else MaterialTheme.colorScheme.error
                                 )
                             }
                             
@@ -526,7 +549,7 @@ fun DecisionDetailScreen(
                                     .fillMaxWidth()
                                     .height(12.dp)
                                     .clip(RoundedCornerShape(6.dp)),
-                                color = if (regretIndex < 50) BrandSuccess else MaterialTheme.colorScheme.error
+                                color = if (regretIndex < 50) SemanticColors.Success else MaterialTheme.colorScheme.error
                             )
                         }
                     }
@@ -555,8 +578,8 @@ fun DecisionDetailScreen(
                                     text = "${accuracy.toInt()}%",
                                     style = MaterialTheme.typography.headlineMedium,
                                     fontWeight = FontWeight.Bold,
-                                    color = if (accuracy >= 75) BrandSuccess
-                                    else if (accuracy >= 50) BrandPrimary
+                                    color = if (accuracy >= 75) SemanticColors.Success
+                                    else if (accuracy >= 50) MaterialTheme.colorScheme.primary
                                     else MaterialTheme.colorScheme.error
                                 )
                             }
@@ -567,8 +590,8 @@ fun DecisionDetailScreen(
                                     .fillMaxWidth()
                                     .height(12.dp)
                                     .clip(RoundedCornerShape(6.dp)),
-                                color = if (accuracy >= 75) BrandSuccess
-                                else if (accuracy >= 50) BrandPrimary
+                                color = if (accuracy >= 75) SemanticColors.Success
+                                else if (accuracy >= 50) MaterialTheme.colorScheme.primary
                                 else MaterialTheme.colorScheme.error
                             )
                         }
@@ -659,7 +682,7 @@ fun PredictionRow(
             text = valueStr,
             style = MaterialTheme.typography.bodyMedium,
             fontWeight = FontWeight.Bold,
-            color = BrandPrimary
+            color = MaterialTheme.colorScheme.primary
         )
     }
 }
@@ -706,7 +729,7 @@ fun OutcomeComparisonRow(
         Text(
             text = if (isAccurate) "✓" else "✗",
             style = MaterialTheme.typography.titleMedium,
-            color = if (isAccurate) BrandSuccess else MaterialTheme.colorScheme.error
+            color = if (isAccurate) SemanticColors.Success else MaterialTheme.colorScheme.error
         )
     }
 }
@@ -752,7 +775,7 @@ fun SimilarDecisionCard(
                         text = "${similarAccuracy.toInt()}%",
                         style = MaterialTheme.typography.bodyMedium,
                         fontWeight = FontWeight.Bold,
-                        color = if (similarAccuracy > currentAccuracy) BrandSuccess 
+                        color = if (similarAccuracy > currentAccuracy) SemanticColors.Success 
                                else if (similarAccuracy < currentAccuracy) MaterialTheme.colorScheme.error
                                else MaterialTheme.colorScheme.onSurface
                     )
@@ -768,7 +791,7 @@ fun SimilarDecisionCard(
                         text = "${similarRegret.toInt()}%",
                         style = MaterialTheme.typography.bodyMedium,
                         fontWeight = FontWeight.Bold,
-                        color = if (similarRegret < currentRegret) BrandSuccess
+                        color = if (similarRegret < currentRegret) SemanticColors.Success
                                else if (similarRegret > currentRegret) MaterialTheme.colorScheme.error
                                else MaterialTheme.colorScheme.onSurface
                     )

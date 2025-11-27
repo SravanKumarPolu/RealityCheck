@@ -63,7 +63,7 @@ fun FilterBar(
                 ) {
                     Icon(
                         imageVector = Icons.Default.FilterList,
-                        contentDescription = null,
+                        contentDescription = null, // Decorative - text provides context
                         modifier = Modifier.size(20.dp),
                         tint = MaterialTheme.colorScheme.onSurfaceVariant
                     )

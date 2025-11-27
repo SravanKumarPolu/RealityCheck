@@ -1,9 +1,14 @@
 package com.realitycheck.app.ui.theme
 
 import androidx.compose.animation.core.*
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.focusable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.interaction.collectIsPressedAsState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -11,6 +16,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
@@ -65,6 +71,8 @@ object Animation {
 
 /**
  * Press animation modifier for interactive elements
+ * Note: This modifier is for press-only animations. For clickable elements,
+ * use Material's default indication which includes focus indicators.
  */
 fun Modifier.pressAnimation(): Modifier = composed {
     val interactionSource = remember { MutableInteractionSource() }
@@ -79,9 +87,7 @@ fun Modifier.pressAnimation(): Modifier = composed {
         label = "press_scale"
     )
     
-    this
-        .clickable(interactionSource = interactionSource, indication = null) {}
-        .scale(scale)
+    this.scale(scale)
 }
 
 /**
@@ -101,4 +107,52 @@ fun slideInAnimationSpec(): AnimationSpec<Float> = spring(
     dampingRatio = Spring.DampingRatioMediumBouncy,
     stiffness = Spring.StiffnessMedium
 )
+
+/**
+ * Accessibility: Focus indicator colors
+ * Material 3 provides default focus indicators, but these can be customized
+ * for enhanced visibility (WCAG 2.2 requires 3:1 contrast for UI components)
+ * 
+ * Note: Material 3 automatically handles focus indicators with proper contrast.
+ * These values are provided for custom implementations if needed.
+ */
+object FocusColors {
+    // Focus ring color - uses theme primary for proper contrast
+    @Composable
+    fun getFocusRingColor(): Color {
+        return MaterialTheme.colorScheme.primary
+    }
+    
+    // Focus border width (2-3px recommended for visibility)
+    val FocusBorderWidth = 2.dp
+    
+    // Focus outline width for enhanced visibility
+    val FocusOutlineWidth = 3.dp
+}
+
+/**
+ * Enhanced clickable modifier with focus support
+ * Use this for clickable cards and custom elements that need focus indicators
+ * 
+ * Material 3's default indication (ripple) includes focus indicators when elements are focusable.
+ * This modifier ensures elements are focusable and use Material's default indication.
+ * 
+ * Note: Material 3 automatically handles focus indicators with proper contrast when:
+ * 1. Elements are made focusable with .focusable()
+ * 2. Elements use Material's default indication (not indication = null)
+ * 3. Elements are navigable via keyboard or accessibility services
+ */
+fun Modifier.enhancedClickable(
+    onClick: () -> Unit
+): Modifier = composed {
+    // Use Material's default indication which includes focus indicators
+    // Material 3 automatically handles focus indicators with proper contrast
+    val source = remember { MutableInteractionSource() }
+    this
+        .focusable(interactionSource = source)
+        .clickable(onClick = onClick)
+        // Note: Material 3's default indication (ripple) includes focus indicators
+        // We don't set indication = null, so focus indicators are automatically shown
+        // Focus indicators appear when the element is focused via keyboard navigation
+}
 

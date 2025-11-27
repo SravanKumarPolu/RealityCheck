@@ -34,7 +34,6 @@
     <string name="decision_accuracy_score">Decision Accuracy Score</string>
     <string name="regret_map">Regret Map</string>
     <string name="total_decisions">Total Decisions</string>
-    <string name="completed_decisions">Completed</string>
     <string name="average_accuracy">Avg Accuracy</string>
     <string name="overconfidence">Overconfidence Patterns</string>
     <string name="blind_spots">Blind Spots</string>
@@ -47,5 +46,12 @@
     
     <!-- Widget -->
     <string name="widget_description">Quick access to log decisions</string>
+    
+    <!-- AppCompat search view strings -->
+    <string name="abc_searchview_description_search">Search</string>
+    <string name="abc_searchview_description_clear">Clear query</string>
+    <string name="abc_searchview_description_submit">Submit query</string>
+    <string name="abc_searchview_description_voice">Voice search</string>
+    <string name="abc_action_bar_up_description">Navigate up</string>
 </resources>
 

@@ -17,24 +17,17 @@
     <!-- Checkmark - Decision point and verification -->
     <path
         android:fillColor="#6C5CE7"
-        android:strokeColor="#6C5CE7"
-        android:strokeWidth="3"
-        android:strokeLinecap="round"
-        android:strokeLinejoin="round"
+        android:fillType="nonZero"
         android:pathData="M42,60 L52,70 L78,44"/>
     
     <!-- Small dot at top - Future/prediction point -->
-    <circle
+    <path
         android:fillColor="#FD79A8"
-        android:cx="60"
-        android:cy="35"
-        android:radius="3"/>
+        android:pathData="M 57,35 a 3,3 0 1,1 6,0 a 3,3 0 1,1 -6,0"/>
     
     <!-- Small dot at bottom - Reality/outcome point -->
-    <circle
+    <path
         android:fillColor="#00B894"
-        android:cx="60"
-        android:cy="85"
-        android:radius="3"/>
+        android:pathData="M 57,85 a 3,3 0 1,1 6,0 a 3,3 0 1,1 -6,0"/>
 </vector>
 

@@ -1,5 +1,6 @@
 package com.realitycheck.app.ui.screens
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
@@ -8,6 +9,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Error
 import androidx.compose.material3.*
@@ -359,7 +361,7 @@ fun CreateDecisionScreen(
                     ) {
                         Icon(
                             imageVector = Icons.Default.Error,
-                            contentDescription = null,
+                            contentDescription = "Error", // Important for screen readers
                             tint = MaterialTheme.colorScheme.error,
                             modifier = Modifier.size(16.dp)
                         )
@@ -611,7 +613,7 @@ fun CreateDecisionScreen(
                             if (tagInput.isNotBlank()) {
                                 IconButton(onClick = {
                                     val newTag = tagInput.trim()
-                                    if (newTag.isNotEmpty() && !tags.contains(newTag, ignoreCase = true)) {
+                                    if (newTag.isNotEmpty() && !tags.any { it.equals(newTag, ignoreCase = true) }) {
                                         tags = tags + newTag
                                         tagInput = ""
                                     }

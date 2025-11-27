@@ -64,12 +64,11 @@ fun TimeSeriesChart(
                     lineSpec(
                         lineColor = MaterialTheme.colorScheme.primary,
                         lineThickness = 4.dp,
-                        pointSize = 8.dp,
-                        pointColor = MaterialTheme.colorScheme.primary
+                        pointSize = 8.dp
                     )
                 )
             ),
-            chartModel = chartEntryModel,
+            model = chartEntryModel,
             startAxis = rememberStartAxis(
                 valueFormatter = AxisValueFormatter { value, _ ->
                     "${value.toInt()}%"

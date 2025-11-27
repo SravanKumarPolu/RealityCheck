@@ -2,6 +2,7 @@ package com.realitycheck.app.data
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
+import java.util.Date
 import javax.inject.Inject
 
 class DecisionRepository @Inject constructor(
@@ -115,7 +116,7 @@ class DecisionRepository @Inject constructor(
             
             // Tags filter
             val tagsMatch = selectedTags.isEmpty() || 
-                           selectedTags.any { tag -> decision.tags.contains(tag, ignoreCase = true) }
+                           selectedTags.any { tag -> decision.tags.any { it.equals(tag, ignoreCase = true) } }
             
             // Date range filter
             val dateMatch = dateRange == null || dateRange.first == null || dateRange.second == null ||
@@ -467,7 +468,7 @@ data class AnalyticsData(
             .filter { 
                 it.category == category &&
                 it.isCompleted() &&
-                it.id != 0 // Exclude current decision if updating
+                it.id != 0L // Exclude current decision if updating
             }
             .map { past ->
                 val pastWords = past.title.lowercase()

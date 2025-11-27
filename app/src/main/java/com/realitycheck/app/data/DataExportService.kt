@@ -25,7 +25,7 @@ class DataExportService @Inject constructor(
      */
     suspend fun exportToCsv(context: Context): File = withContext(Dispatchers.IO) {
         val decisionsFlow = repository.getAllDecisions()
-        val decisionsList = first(decisionsFlow)
+        val decisionsList = decisionsFlow.first()
         
         val dateFormat = SimpleDateFormat("yyyy-MM-dd_HH-mm-ss", Locale.getDefault())
         val fileName = "realitycheck_export_${dateFormat.format(Date())}.csv"
@@ -39,7 +39,7 @@ class DataExportService @Inject constructor(
             writer.append("Followed Decision,Outcome,Outcome Date,Accuracy,Regret Index\n")
             
             // Write data rows
-            decisionsList.forEach { decision ->
+            decisionsList.forEach { decision: Decision ->
                 writer.append("${decision.id},")
                 writer.append("\"${escapeCsv(decision.title)}\",")
                 writer.append("${decision.category ?: "Other"},")
@@ -76,7 +76,7 @@ class DataExportService @Inject constructor(
      */
     suspend fun exportToJson(context: Context): File = withContext(Dispatchers.IO) {
         val decisionsFlow = repository.getAllDecisions()
-        val decisionsList = first(decisionsFlow)
+        val decisionsList = decisionsFlow.first()
         
         val dateFormat = SimpleDateFormat("yyyy-MM-dd_HH-mm-ss", Locale.getDefault())
         val fileName = "realitycheck_export_${dateFormat.format(Date())}.json"
@@ -84,7 +84,7 @@ class DataExportService @Inject constructor(
         
         val jsonArray = JSONArray()
         
-        decisionsList.forEach { decision ->
+        decisionsList.forEach { decision: Decision ->
             val jsonObject = JSONObject().apply {
                 put("id", decision.id)
                 put("title", decision.title)

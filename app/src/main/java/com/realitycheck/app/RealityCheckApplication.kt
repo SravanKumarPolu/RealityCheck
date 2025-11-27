@@ -12,18 +12,17 @@ class RealityCheckApplication : Application(), Configuration.Provider {
     @Inject
     lateinit var workerFactory: HiltWorkerFactory
     
+    override val workManagerConfiguration: Configuration
+        get() = Configuration.Builder()
+            .setWorkerFactory(workerFactory)
+            .build()
+    
     override fun onCreate() {
         super.onCreate()
         // Database initialization is now handled by Hilt
         
         // Schedule weekly insights notifications
         com.realitycheck.app.notifications.WeeklyInsightsWorker.scheduleWeeklyInsights(this)
-    }
-    
-    override fun getWorkManagerConfiguration(): Configuration {
-        return Configuration.Builder()
-            .setWorkerFactory(workerFactory)
-            .build()
     }
 }
 

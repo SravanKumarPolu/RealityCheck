@@ -1,6 +1,7 @@
 package com.realitycheck.app.ui.screens
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -75,7 +76,7 @@ fun AnalyticsScreen(
                         title = "Completed",
                         value = currentAnalytics.completedDecisions.toString(),
                         modifier = Modifier.weight(1f),
-                        color = BrandSuccess
+                        color = SemanticColors.Success
                     )
                 }
                 
@@ -104,7 +105,7 @@ fun AnalyticsScreen(
                                     text = "${currentAnalytics.averageAccuracy.toInt()}%",
                                     style = MaterialTheme.typography.displaySmall,
                                     fontWeight = FontWeight.Bold,
-                                    color = BrandPrimary
+                                    color = MaterialTheme.colorScheme.primary
                                 )
                                 Text(
                                     text = "${currentAnalytics.completedDecisions} decisions",
@@ -119,7 +120,7 @@ fun AnalyticsScreen(
                                     .fillMaxWidth()
                                     .height(16.dp)
                                     .clip(RoundedCornerShape(8.dp)),
-                                color = BrandPrimary
+                                color = MaterialTheme.colorScheme.primary
                             )
                         } else {
                             Text(
@@ -152,12 +153,12 @@ fun AnalyticsScreen(
                             RegretPatternItem(
                                 label = "High Accuracy (75%+)",
                                 percentage = regretPatterns["High"] ?: 0f,
-                                color = BrandSuccess
+                                color = SemanticColors.Success
                             )
                             RegretPatternItem(
                                 label = "Medium Accuracy (50-75%)",
                                 percentage = regretPatterns["Medium"] ?: 0f,
-                                color = BrandPrimary
+                                color = MaterialTheme.colorScheme.primary
                             )
                             RegretPatternItem(
                                 label = "Low Accuracy (<50%)",
@@ -209,7 +210,7 @@ fun AnalyticsScreen(
                                     text = trendDirection,
                                     style = MaterialTheme.typography.titleMedium,
                                     fontWeight = FontWeight.Bold,
-                                    color = if (trendDirection.contains("Improving")) BrandSuccess
+                                    color = if (trendDirection.contains("Improving")) SemanticColors.Success
                                     else if (trendDirection.contains("Declining")) MaterialTheme.colorScheme.error
                                     else MaterialTheme.colorScheme.primary
                                 )
@@ -236,7 +237,7 @@ fun AnalyticsScreen(
                                                 .width(100.dp)
                                                 .height(6.dp)
                                                 .clip(RoundedCornerShape(3.dp)),
-                                            color = BrandPrimary
+                                            color = MaterialTheme.colorScheme.primary
                                         )
                                         Text(
                                             text = "${trend.averageAccuracy.toInt()}%",
@@ -323,7 +324,11 @@ fun AnalyticsScreen(
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(Radius.lg),
                         colors = CardDefaults.cardColors(
-                            containerColor = BrandWarning.copy(alpha = 0.1f)
+                            containerColor = if (isSystemInDarkTheme()) {
+                                SemanticColors.WarningContainerDark
+                            } else {
+                                SemanticColors.WarningContainerLight
+                            }
                         )
                     ) {
                         Column(
@@ -385,7 +390,7 @@ fun AnalyticsScreen(
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(Radius.lg),
                         colors = CardDefaults.cardColors(
-                            containerColor = BrandPrimary.copy(alpha = 0.1f)
+                            containerColor = MaterialTheme.colorScheme.primaryContainer
                         )
                     ) {
                         Column(
@@ -443,13 +448,18 @@ fun StatCard(
     title: String,
     value: String,
     modifier: Modifier = Modifier,
-    color: Color = BrandPrimary
+    color: Color = MaterialTheme.colorScheme.primary
 ) {
+    val isDark = isSystemInDarkTheme()
     Card(
         modifier = modifier,
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
-            containerColor = color.copy(alpha = 0.1f)
+            containerColor = if (color == SemanticColors.Success) {
+                if (isDark) SemanticColors.SuccessContainerDark else SemanticColors.SuccessContainerLight
+            } else {
+                MaterialTheme.colorScheme.primaryContainer
+            }
         )
     ) {
         Column(

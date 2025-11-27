@@ -157,7 +157,7 @@ abstract class DecisionDatabase : RoomDatabase() {
             // Check if column already exists by querying the schema
             val cursor = database.query(
                 "PRAGMA table_info($tableName)",
-                null
+                emptyArray<String>()
             )
             
             var columnExists = false
